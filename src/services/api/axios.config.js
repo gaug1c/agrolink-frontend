@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Configuration de base d'axios 
 // IMPORTANT: Remplacez l'URL par celle de votre API backend
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://agrolink-backend-z.up.railway.app/api';
 
 const instance = axios.create({
   baseURL: API_URL,
