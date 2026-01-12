@@ -15,42 +15,44 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    userType: 'consommateur',
-    // Champs communs
+    userType: 'consumer',
+    
+    // Common fields
     email: '',
     password: '',
     confirmPassword: '',
     acceptTerms: false,
     
-    // Champs consommateur
-    nom: '',
-    prenom: '',
-    telephone: '',
-    adresse: '',
-    ville: '',
+    // Consumer fields
+    lastName: '',
+    firstName: '',
+    phone: '',
+    address: '',
+    city: '',
     
-    // Champs producteur
-    nomResponsable: '',
-    nomStructure: '',
-    typesProduction: [],
-    autreProduction: '',
+    // Producer fields
+    responsibleLastName: '',
+    responsibleFirstName: '',
+    structureName: '',
+    productionTypes: [],
+    otherProduction: '',
     province: '',
-    villeProduction: '',
-    villageProduction: '',
-    surfaceCultivee: '',
-    uniteSurface: 'hectare',
-    quantiteDisponible: '',
-    telephoneProducteur: '',
+    productionCity: '',
+    productionVillage: '',
+    cultivatedArea: '',
+    areaUnit: 'hectare',
+    availableQuantity: '',
+    producerPhone: '',
     isWhatsApp: false,
-    emailProducteur: '',
-    possibiliteLivraison: '',
-    pieceIdentite: null,
+    producerEmail: '',
+    deliveryPossibility: '',
+    identityDocument: null,
   });
 
   const [errors, setErrors] = useState({});
 
-  // Options pour consommateurs
-  const villesOptions = [
+  // Options for consumers
+  const cityOptions = [
     { value: '', label: 'Sélectionner une ville' },
     { value: 'libreville', label: 'Libreville' },
     { value: 'port-gentil', label: 'Port-Gentil' },
@@ -59,8 +61,8 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     { value: 'moanda', label: 'Moanda' },
   ];
 
-  // Options pour producteurs
-  const provincesOptions = [
+  // Options for producers
+  const provinceOptions = [
     { value: '', label: 'Sélectionner une province' },
     { value: 'estuaire', label: 'Estuaire' },
     { value: 'haut-ogooue', label: 'Haut-Ogooué' },
@@ -73,7 +75,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     { value: 'woleu-ntem', label: 'Woleu-Ntem' },
   ];
 
-  const villesParProvince = {
+  const citiesByProvince = {
     'estuaire': ['Libreville', 'Owendo', 'Akanda', 'Ntoum', 'Kango'],
     'haut-ogooue': ['Franceville', 'Moanda', 'Mounana', 'Okondja', 'Lékoni'],
     'moyen-ogooue': ['Lambaréné', 'Ndjolé', 'Bifoun'],
@@ -85,7 +87,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     'woleu-ntem': ['Oyem', 'Bitam', 'Mitzic', 'Minvoul'],
   };
 
-  const typesProductionOptions = [
+  const productionTypeOptions = [
     { value: 'banane', label: 'Banane' },
     { value: 'manioc', label: 'Manioc' },
     { value: 'tomate', label: 'Tomate' },
@@ -106,6 +108,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -113,91 +116,91 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
 
   const handleProductionTypeChange = (value) => {
     setFormData(prev => {
-      const typesProduction = prev.typesProduction.includes(value)
-        ? prev.typesProduction.filter(t => t !== value)
-        : [...prev.typesProduction, value];
-      return { ...prev, typesProduction };
+      const productionTypes = prev.productionTypes.includes(value)
+        ? prev.productionTypes.filter(t => t !== value)
+        : [...prev.productionTypes, value];
+      
+      return { ...prev, productionTypes };
     });
-    if (errors.typesProduction) {
-      setErrors(prev => ({ ...prev, typesProduction: '' }));
+
+    if (errors.productionTypes) {
+      setErrors(prev => ({ ...prev, productionTypes: '' }));
     }
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Vérifier la taille (max 5MB)
+      // Check size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({ ...prev, pieceIdentite: 'Le fichier ne doit pas dépasser 5 MB' }));
+        setErrors(prev => ({
+          ...prev,
+          identityDocument: 'Le fichier ne doit pas dépasser 5 MB'
+        }));
         return;
       }
-      // Vérifier le type
+
+      // Check type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
       if (!allowedTypes.includes(file.type)) {
-        setErrors(prev => ({ ...prev, pieceIdentite: 'Format non accepté. Utilisez JPG, PNG ou PDF' }));
+        setErrors(prev => ({
+          ...prev,
+          identityDocument: 'Format non accepté. Utilisez JPG, PNG ou PDF'
+        }));
         return;
       }
-      setFormData(prev => ({ ...prev, pieceIdentite: file }));
-      setErrors(prev => ({ ...prev, pieceIdentite: '' }));
+
+      setFormData(prev => ({ ...prev, identityDocument: file }));
+      setErrors(prev => ({ ...prev, identityDocument: '' }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
 
-    if (formData.userType === 'consommateur') {
-      // Validation consommateur
-      if (!formData.nom.trim()) newErrors.nom = 'Nom requis';
-      if (!formData.prenom.trim()) newErrors.prenom = 'Prénom requis';
-      
+    if (formData.userType === 'consumer') {
+      // Consumer validation
+      if (!formData.lastName.trim()) newErrors.lastName = 'Nom requis';
+      if (!formData.firstName.trim()) newErrors.firstName = 'Prénom requis';
       if (!formData.email) {
         newErrors.email = 'Email requis';
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
         newErrors.email = 'Email invalide';
       }
-
-      if (!formData.telephone) {
-        newErrors.telephone = 'Téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.telephone.replace(/\s/g, ''))) {
-        newErrors.telephone = 'Numéro invalide';
+      if (!formData.phone) {
+        newErrors.phone = 'Téléphone requis';
+      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phone.replace(/\s/g, ''))) {
+        newErrors.phone = 'Numéro invalide';
       }
-
-      if (!formData.ville) newErrors.ville = 'Ville requise';
-
-    } else if (formData.userType === 'producteur') {
-      // Validation producteur
-      if (!formData.nomResponsable.trim()) {
-        newErrors.nomResponsable = 'Nom du responsable requis';
+      if (!formData.city) newErrors.city = 'Ville requise';
+    } else if (formData.userType === 'producer') {
+      // Producer validation
+      if (!formData.responsibleLastName.trim()) {
+        newErrors.responsibleLastName = 'Nom du responsable requis';
       }
-
-      if (formData.typesProduction.length === 0 && !formData.autreProduction.trim()) {
-        newErrors.typesProduction = 'Sélectionnez au moins un type de production';
+      if (formData.productionTypes.length === 0 && !formData.otherProduction.trim()) {
+        newErrors.productionTypes = 'Sélectionnez au moins un type de production';
       }
-
       if (!formData.province) {
         newErrors.province = 'Province requise';
       }
-
-      if (!formData.villeProduction && !formData.villageProduction) {
-        newErrors.villeProduction = 'Ville ou village requis';
+      if (!formData.productionCity && !formData.productionVillage) {
+        newErrors.productionCity = 'Ville ou village requis';
       }
-
-      if (!formData.telephoneProducteur) {
-        newErrors.telephoneProducteur = 'Numéro de téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.telephoneProducteur.replace(/\s/g, ''))) {
-        newErrors.telephoneProducteur = 'Numéro invalide';
+      if (!formData.producerPhone) {
+        newErrors.producerPhone = 'Numéro de téléphone requis';
+      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.producerPhone.replace(/\s/g, ''))) {
+        newErrors.producerPhone = 'Numéro invalide';
       }
-
-      if (formData.emailProducteur && !/\S+@\S+\.\S+/.test(formData.emailProducteur)) {
-        newErrors.emailProducteur = 'Email invalide';
+      if (formData.producerEmail && !/\S+@\S+\.\S+/.test(formData.producerEmail)) {
+        newErrors.producerEmail = 'Email invalide';
       }
-
-      if (!formData.pieceIdentite) {
-        newErrors.pieceIdentite = 'Pièce d\'identité requise';
+      if (!formData.identityDocument) {
+        newErrors.identityDocument = 'Pièce d\'identité requise';
       }
     }
 
-    // Validation commune
+    // Common validation
     if (!formData.password) {
       newErrors.password = 'Mot de passe requis';
     } else if (formData.password.length < 6) {
@@ -217,484 +220,480 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  if (!validate()) return;
+    e.preventDefault();
+    setError('');
 
-  setLoading(true);
+    if (!validate()) return;
 
-  try {
-    const submitData = new FormData();
+    setLoading(true);
 
-    if (formData.userType === 'producteur') {
-      Object.keys(formData).forEach(key => {
-        if (key === 'typesProduction') {
-          submitData.append(key, JSON.stringify(formData[key]));
-        } else if (key === 'pieceIdentite' && formData[key]) {
-          submitData.append(key, formData[key]);
-        } else if (formData[key] !== null && formData[key] !== '') {
-          submitData.append(key, formData[key]);
-        }
-      });
-    } else {
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null && formData[key] !== '') {
-          submitData.append(key, formData[key]);
-        }
-      });
-    }
+    try {
+      const submitData = new FormData();
 
-    const response = await register(submitData);
-
-    // Vérifier que l'inscription a réussi côté backend
-    if (!response?.data?.user || !response?.data?.token) {
-      throw new Error(response?.data?.message || "Impossible de créer le compte");
-    }
-
-    // Succès
-    setSuccess(true);
-
-    setTimeout(() => {
-      if (onSuccess) {
-        onSuccess();
-      } else if (redirectTo) {
-        navigate(redirectTo);
+      if (formData.userType === 'producer') {
+        Object.keys(formData).forEach(key => {
+          if (key === 'productionTypes') {
+            submitData.append(key, JSON.stringify(formData[key]));
+          } else if (key === 'identityDocument' && formData[key]) {
+            submitData.append(key, formData[key]);
+          } else if (formData[key] !== null && formData[key] !== '') {
+            submitData.append(key, formData[key]);
+          }
+        });
       } else {
-        const userType = response.data.user.userType || formData.userType;
-        if (userType === 'producteur' || userType === 'producer') {
-          navigate('/producteur/dashboard');
-        } else {
-          navigate('/');
-        }
+        Object.keys(formData).forEach(key => {
+          if (formData[key] !== null && formData[key] !== '') {
+            submitData.append(key, formData[key]);
+          }
+        });
       }
-    }, 2000);
 
-  } catch (err) {
+      const response = await register(submitData);
+
+      // Check that registration succeeded on backend
+      if (!response?.data?.user || !response?.data?.token) {
+        throw new Error(response?.data?.message || "Impossible de créer le compte");
+      }
+
+      // Success
+      setSuccess(true);
+
+      setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+        } else if (redirectTo) {
+          navigate(redirectTo);
+        } else {
+          const userType = response.data.user.userType || formData.userType;
+          if (userType === 'producer' || userType === 'producteur') {
+            navigate('/producteur/dashboard');
+          } else {
+            navigate('/');
+          }
+        }
+      }, 2000);
+
+    } catch (err) {
       console.error('Erreur inscription:', err);
-      console.log('Données de l’erreur:', err.response?.data);
-  setError(err.response?.data?.message || err.message || "Une erreur est survenue");
-} finally {
-    setLoading(false);
-  }
-};
-
+      console.log('Données de l\'erreur:', err.response?.data);
+      setError(err.response?.data?.message || err.message || "Une erreur est survenue");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (success) {
     return (
-      <div className="text-center py-12">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">Inscription réussie !</h3>
-        <p className="text-gray-600 mb-4">
-          {formData.userType === 'producteur' 
-            ? 'Votre compte producteur a été créé avec succès. Redirection vers votre dashboard...' 
-            : 'Votre compte a été créé avec succès. Redirection...'}
-        </p>
-        <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 px-4">
+        <Alert
+          type="success"
+          title="Inscription réussie !"
+          message={
+            formData.userType === 'producer'
+              ? 'Votre compte producteur a été créé avec succès. Redirection vers votre dashboard...'
+              : 'Votre compte a été créé avec succès. Redirection...'
+          }
+          className="max-w-md"
+        />
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      {error && (
-        <Alert
-          type="error"
-          message={error}
-          dismissible
-          onDismiss={() => setError('')}
-          className="mb-6"
-        />
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Créer un compte
+            </h2>
+            <p className="text-gray-600">
+              Rejoignez AgriConnect pour {formData.userType === 'consumer' ? 'acheter' : 'vendre'} des produits locaux
+            </p>
+          </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* User Type Selector */}
-        <UserTypeSelector
-          selected={formData.userType}
-          onChange={(type) => setFormData(prev => ({ ...prev, userType: type }))}
-        />
+          {error && (
+            <Alert
+              type="error"
+              title="Erreur"
+              message={error}
+              onClose={() => setError('')}
+              className="mb-6"
+            />
+          )}
 
-        {/* CHAMPS CONSOMMATEUR */}
-        {formData.userType === 'consommateur' && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Prénom"
-                name="prenom"
-                value={formData.prenom}
-                onChange={handleChange}
-                placeholder="Jean"
-                icon={<User />}
-                error={errors.prenom}
-                required
-              />
-              <Input
-                label="Nom"
-                name="nom"
-                value={formData.nom}
-                onChange={handleChange}
-                placeholder="Dupont"
-                icon={<User />}
-                error={errors.nom}
-                required
-              />
-            </div>
-
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="exemple@email.com"
-              icon={<Mail />}
-              error={errors.email}
-              required
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* User Type Selector */}
+            <UserTypeSelector
+              selected={formData.userType}
+              onChange={(type) => setFormData(prev => ({ ...prev, userType: type }))}
             />
 
-            <Input
-              label="Téléphone"
-              type="tel"
-              name="telephone"
-              value={formData.telephone}
-              onChange={handleChange}
-              placeholder="+241 XX XX XX XX"
-              icon={<Phone />}
-              error={errors.telephone}
-              required
-            />
-
-            <Input
-              label="Adresse (optionnel)"
-              name="adresse"
-              value={formData.adresse}
-              onChange={handleChange}
-              placeholder="Votre adresse complète"
-              icon={<MapPin />}
-            />
-
-            <Select
-              label="Ville"
-              name="ville"
-              value={formData.ville}
-              onChange={handleChange}
-              options={villesOptions}
-              error={errors.ville}
-              required
-            />
-          </>
-        )}
-
-        {/* CHAMPS PRODUCTEUR */}
-        {formData.userType === 'producteur' && (
-          <>
-            {/* Nom du responsable */}
-            <Input
-              label="Nom complet du responsable"
-              name="nomResponsable"
-              value={formData.nomResponsable}
-              onChange={handleChange}
-              placeholder="Ex: Jean Dupont"
-              icon={<User />}
-              error={errors.nomResponsable}
-              required
-            />
-
-            {/* Nom de la structure */}
-            <Input
-              label="Nom de la structure (optionnel)"
-              name="nomStructure"
-              value={formData.nomStructure}
-              onChange={handleChange}
-              placeholder="Ex: Ferme Bio du Gabon"
-              icon={<Briefcase />}
-            />
-
-            {/* Types de production */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Types de production <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {typesProductionOptions.map(option => (
-                  <label
-                    key={option.value}
-                    className={`
-                      flex items-center p-3 rounded-lg border-2 cursor-pointer transition
-                      ${formData.typesProduction.includes(option.value)
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                      }
-                    `}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.typesProduction.includes(option.value)}
-                      onChange={() => handleProductionTypeChange(option.value)}
-                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.typesProduction && (
-                <p className="text-red-500 text-sm mt-1">{errors.typesProduction}</p>
-              )}
-            </div>
-
-            {/* Autre production */}
-            <Input
-              label="Autre type de production"
-              name="autreProduction"
-              value={formData.autreProduction}
-              onChange={handleChange}
-              placeholder="Si autre, précisez..."
-              icon={<Leaf />}
-            />
-
-            {/* Localisation */}
-            <div>
-              <Select
-                label="Province"
-                name="province"
-                value={formData.province}
-                onChange={handleChange}
-                options={provincesOptions}
-                error={errors.province}
-                required
-              />
-
-              {formData.province && villesParProvince[formData.province] && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <Select
-                    label="Ville"
-                    name="villeProduction"
-                    value={formData.villeProduction}
+            {/* CONSUMER FIELDS */}
+            {formData.userType === 'consumer' && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Prénom"
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
-                    options={[
-                      { value: '', label: 'Sélectionner une ville' },
-                      ...villesParProvince[formData.province].map(v => ({ value: v, label: v }))
-                    ]}
-                    error={errors.villeProduction}
+                    icon={<User className="w-5 h-5 text-gray-400" />}
+                    error={errors.firstName}
+                    required
                   />
                   <Input
-                    label="Village (optionnel)"
-                    name="villageProduction"
-                    value={formData.villageProduction}
+                    label="Nom"
+                    name="lastName"
+                    value={formData.lastName}
                     onChange={handleChange}
-                    placeholder="Nom du village"
-                    icon={<MapPin />}
+                    icon={<User className="w-5 h-5 text-gray-400" />}
+                    error={errors.lastName}
+                    required
                   />
                 </div>
-              )}
-            </div>
 
-            {/* Surface cultivée / Capacité */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Surface cultivée / Capacité (optionnel)"
-                name="surfaceCultivee"
-                type="number"
-                value={formData.surfaceCultivee}
-                onChange={handleChange}
-                placeholder="Ex: 5"
-                icon={<Package />}
-              />
-              <Select
-                label="Unité"
-                name="uniteSurface"
-                value={formData.uniteSurface}
-                onChange={handleChange}
-                options={[
-                  { value: 'hectare', label: 'Hectare (ha)' },
-                  { value: 'metre-carre', label: 'Mètre carré (m²)' },
-                ]}
-              />
-            </div>
-
-            {/* Quantité disponible */}
-            <Input
-              label="Quantité disponible (optionnel)"
-              name="quantiteDisponible"
-              value={formData.quantiteDisponible}
-              onChange={handleChange}
-              placeholder="Ex: 500 kg, 100 unités..."
-              icon={<Package />}
-            />
-
-            {/* Téléphone producteur */}
-            <div>
-              <Input
-                label="Numéro de téléphone"
-                type="tel"
-                name="telephoneProducteur"
-                value={formData.telephoneProducteur}
-                onChange={handleChange}
-                placeholder="+241 XX XX XX XX"
-                icon={<Phone />}
-                error={errors.telephoneProducteur}
-                required
-              />
-              <div className="mt-2">
-                <Checkbox
-                  name="isWhatsApp"
-                  checked={formData.isWhatsApp}
+                <Input
+                  label="Email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  label="Ce numéro est aussi sur WhatsApp"
+                  icon={<Mail className="w-5 h-5 text-gray-400" />}
+                  error={errors.email}
+                  required
                 />
-              </div>
-            </div>
 
-            {/* Email producteur */}
+                <Input
+                  label="Téléphone"
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+241 XX XX XX XX"
+                  icon={<Phone className="w-5 h-5 text-gray-400" />}
+                  error={errors.phone}
+                  required
+                />
+
+                <Input
+                  label="Adresse"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  icon={<MapPin className="w-5 h-5 text-gray-400" />}
+                />
+
+                <Select
+                  label="Ville"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  options={cityOptions}
+                  error={errors.city}
+                  required
+                />
+              </>
+            )}
+
+            {/* PRODUCER FIELDS */}
+            {formData.userType === 'producer' && (
+              <>
+                {/* Responsible name */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Nom du responsable"
+                    name="responsibleLastName"
+                    value={formData.responsibleLastName}
+                    onChange={handleChange}
+                    icon={<User className="w-5 h-5 text-gray-400" />}
+                    error={errors.responsibleLastName}
+                    required
+                  />
+                  <Input
+                    label="Prénom du responsable"
+                    name="responsibleFirstName"
+                    value={formData.responsibleFirstName}
+                    onChange={handleChange}
+                    icon={<User className="w-5 h-5 text-gray-400" />}
+                  />
+                </div>
+
+                {/* Structure name */}
+                <Input
+                  label="Nom de la structure (optionnel)"
+                  name="structureName"
+                  value={formData.structureName}
+                  onChange={handleChange}
+                  icon={<Briefcase className="w-5 h-5 text-gray-400" />}
+                />
+
+                {/* Production types */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Types de production *
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {productionTypeOptions.map(option => (
+                      <label
+                        key={option.value}
+                        className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.productionTypes.includes(option.value)}
+                          onChange={() => handleProductionTypeChange(option.value)}
+                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {errors.productionTypes && (
+                    <p className="mt-1 text-sm text-red-600">{errors.productionTypes}</p>
+                  )}
+                </div>
+
+                {/* Other production */}
+                <Input
+                  label="Autre production (si non listée)"
+                  name="otherProduction"
+                  value={formData.otherProduction}
+                  onChange={handleChange}
+                  icon={<Leaf className="w-5 h-5 text-gray-400" />}
+                />
+
+                {/* Location */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select
+                    label="Province"
+                    name="province"
+                    value={formData.province}
+                    onChange={handleChange}
+                    options={provinceOptions}
+                    error={errors.province}
+                    required
+                  />
+
+                  {formData.province && citiesByProvince[formData.province] && (
+                    <div className="space-y-4">
+                      <Select
+                        label="Ville de production"
+                        name="productionCity"
+                        value={formData.productionCity}
+                        onChange={handleChange}
+                        options={[
+                          { value: '', label: 'Sélectionner une ville' },
+                          ...citiesByProvince[formData.province].map(v => ({ value: v, label: v }))
+                        ]}
+                        error={errors.productionCity}
+                      />
+                      <Input
+                        label="Village de production"
+                        name="productionVillage"
+                        value={formData.productionVillage}
+                        onChange={handleChange}
+                        placeholder="Nom du village"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Cultivated area / Capacity */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Input
+                    label="Surface cultivée / Capacité"
+                    name="cultivatedArea"
+                    type="number"
+                    value={formData.cultivatedArea}
+                    onChange={handleChange}
+                    placeholder="Ex: 2"
+                    className="md:col-span-2"
+                  />
+                  <Select
+                    label="Unité"
+                    name="areaUnit"
+                    value={formData.areaUnit}
+                    onChange={handleChange}
+                    options={[
+                      { value: 'hectare', label: 'Hectare' },
+                      { value: 'm2', label: 'm²' },
+                      { value: 'tetes', label: 'Têtes' },
+                    ]}
+                  />
+                </div>
+
+                {/* Available quantity */}
+                <Input
+                  label="Quantité disponible / Production mensuelle"
+                  name="availableQuantity"
+                  value={formData.availableQuantity}
+                  onChange={handleChange}
+                  placeholder="Ex: 500 kg/mois"
+                  icon={<Package className="w-5 h-5 text-gray-400" />}
+                />
+
+                {/* Producer phone */}
+                <div className="space-y-2">
+                  <Input
+                    label="Numéro de téléphone"
+                    type="tel"
+                    name="producerPhone"
+                    value={formData.producerPhone}
+                    onChange={handleChange}
+                    placeholder="+241 XX XX XX XX"
+                    icon={<Phone className="w-5 h-5 text-gray-400" />}
+                    error={errors.producerPhone}
+                    required
+                  />
+                  <Checkbox
+                    label="Ce numéro est sur WhatsApp"
+                    name="isWhatsApp"
+                    checked={formData.isWhatsApp}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Producer email */}
+                <Input
+                  label="Email (optionnel)"
+                  type="email"
+                  name="producerEmail"
+                  value={formData.producerEmail}
+                  onChange={handleChange}
+                  icon={<Mail className="w-5 h-5 text-gray-400" />}
+                  error={errors.producerEmail}
+                />
+
+                {/* Delivery possibility */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Possibilité de livraison (optionnel)
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="deliveryPossibility"
+                        value="oui"
+                        checked={formData.deliveryPossibility === 'oui'}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Oui</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="deliveryPossibility"
+                        value="non"
+                        checked={formData.deliveryPossibility === 'non'}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Non</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Identity document */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Pièce d'identité *
+                  </label>
+                  <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                    <div className="text-center">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <span className="text-sm text-gray-600">
+                        {formData.identityDocument
+                          ? formData.identityDocument.name
+                          : 'Cliquez pour télécharger (JPG, PNG, PDF - max 5MB)'}
+                      </span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,application/pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                  {errors.identityDocument && (
+                    <p className="mt-1 text-sm text-red-600">{errors.identityDocument}</p>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* COMMON FIELDS */}
+            
+            {/* Password */}
             <Input
-              label="Adresse email (optionnel)"
-              type="email"
-              name="emailProducteur"
-              value={formData.emailProducteur}
+              label="Mot de passe"
+              type="password"
+              name="password"
+              value={formData.password}
               onChange={handleChange}
-              placeholder="exemple@email.com"
-              icon={<Mail />}
-              error={errors.emailProducteur}
+              icon={<Lock className="w-5 h-5 text-gray-400" />}
+              error={errors.password}
+              required
             />
 
-            {/* Possibilité de livraison */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Possibilité de livraison (optionnel)
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="possibiliteLivraison"
-                    value="oui"
-                    checked={formData.possibiliteLivraison === 'oui'}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Oui</span>
-                </label>
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="possibiliteLivraison"
-                    value="non"
-                    checked={formData.possibiliteLivraison === 'non'}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Non</span>
-                </label>
-              </div>
-            </div>
+            {/* Confirm password */}
+            <Input
+              label="Confirmer le mot de passe"
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              icon={<Lock className="w-5 h-5 text-gray-400" />}
+              error={errors.confirmPassword}
+              required
+            />
 
-            {/* Pièce d'identité */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pièce d'identité <span className="text-red-500">*</span>
-              </label>
-              <div className="mt-1 flex items-center">
-                <label className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-500 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-50 transition">
-                  <Upload className="h-8 w-8 mb-2" />
-                  <span className="text-sm">
-                    {formData.pieceIdentite 
-                      ? formData.pieceIdentite.name 
-                      : 'Cliquez pour télécharger (JPG, PNG, PDF - max 5MB)'}
+            {/* Terms */}
+            <div className="space-y-2">
+              <Checkbox
+                label={
+                  <span className="text-sm text-gray-600">
+                    J'accepte les{' '}
+                    <Link to="/terms" className="text-green-600 hover:text-green-700">
+                      conditions d'utilisation
+                    </Link>{' '}
+                    et la{' '}
+                    <Link to="/privacy" className="text-green-600 hover:text-green-700">
+                      politique de confidentialité
+                    </Link>
                   </span>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".jpg,.jpeg,.png,.pdf"
-                    onChange={handleFileChange}
-                  />
-                </label>
-              </div>
-              {errors.pieceIdentite && (
-                <p className="text-red-500 text-sm mt-1">{errors.pieceIdentite}</p>
+                }
+                name="acceptTerms"
+                checked={formData.acceptTerms}
+                onChange={handleChange}
+              />
+              {errors.acceptTerms && (
+                <p className="text-sm text-red-600">{errors.acceptTerms}</p>
               )}
             </div>
-          </>
-        )}
 
-        {/* CHAMPS COMMUNS */}
-        {/* Mot de passe */}
-        <Input
-          label="Mot de passe"
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="••••••••"
-          icon={<Lock />}
-          error={errors.password}
-          required
-        />
-
-        {/* Confirmer mot de passe */}
-        <Input
-          label="Confirmer le mot de passe"
-          type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          placeholder="••••••••"
-          icon={<Lock />}
-          error={errors.confirmPassword}
-          required
-        />
-
-        {/* Terms */}
-        <div>
-          <Checkbox
-            name="acceptTerms"
-            checked={formData.acceptTerms}
-            onChange={handleChange}
-            label={
-              <span className="text-sm">
-                J'accepte les{' '}
-                <Link to="/conditions" className="text-green-600 hover:underline font-semibold">
-                  conditions d'utilisation
-                </Link>{' '}
-                et la{' '}
-                <Link to="/confidentialite" className="text-green-600 hover:underline font-semibold">
-                  politique de confidentialité
-                </Link>
-              </span>
-            }
-          />
-          {errors.acceptTerms && (
-            <p className="text-red-500 text-sm mt-1">{errors.acceptTerms}</p>
-          )}
-        </div>
-
-        {/* Submit */}
-        <Button
-          fullWidth
-          size="lg"
-          loading={loading}
-          onClick={handleSubmit}
-        >
-          {loading ? 'Inscription...' : 'S\'inscrire'}
-        </Button>
-
-        {/* Login Link */}
-        <div className="text-center pt-4 border-t border-gray-200">
-          <p className="text-gray-600">
-            Vous avez déjà un compte ?{' '}
-            <Link 
-              to="/connexion" 
-              className="text-green-600 hover:text-green-700 font-bold hover:underline"
+            {/* Submit */}
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              disabled={loading}
             >
-              Se connecter
-            </Link>
-          </p>
+              {loading ? 'Inscription...' : 'S\'inscrire'}
+            </Button>
+
+            {/* Login Link */}
+            <div className="text-center text-sm text-gray-600">
+              Vous avez déjà un compte ?{' '}
+              <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
+                Se connecter
+              </Link>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
