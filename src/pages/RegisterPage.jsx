@@ -270,9 +270,10 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     }, 2000);
 
   } catch (err) {
-    console.error('Erreur inscription:', err);
-    setError(err.response?.data?.message || err.message || "Une erreur est survenue");
-  } finally {
+      console.error('Erreur inscription:', err);
+      console.log('Données de l’erreur:', err.response?.data);
+  setError(err.response?.data?.message || err.message || "Une erreur est survenue");
+} finally {
     setLoading(false);
   }
 };
