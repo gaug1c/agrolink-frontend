@@ -15,20 +15,20 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
   const [error, setError] = useState('');
   
   const [formData, setFormData] = useState({
-    identifier: '', // Email or phone
+    identifier: '', // Email ou téléphone
     password: '',
     remember: false,
   });
 
   const [errors, setErrors] = useState({});
 
-  // Detects if identifier is an email or phone number
+  // Détecte si l'identifiant est un email ou un numéro de téléphone
   const getIdentifierType = (value) => {
-    // If contains @ it's an email
+    // Si contient @ c'est un email
     if (value.includes('@')) {
       return 'email';
     }
-    // If contains only digits, spaces, +, - or () it's a phone
+    // Si contient seulement des chiffres, espaces, +, - ou () c'est un téléphone
     if (/^[\d\s\+\-\(\)]+$/.test(value)) {
       return 'phone';
     }
@@ -56,12 +56,12 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
       const identifierType = getIdentifierType(formData.identifier);
       
       if (identifierType === 'email') {
-        // Email validation
+        // Validation email
         if (!/\S+@\S+\.\S+/.test(formData.identifier)) {
           newErrors.identifier = 'Email invalide';
         }
       } else if (identifierType === 'phone') {
-        // Phone validation (at least 8 digits)
+        // Validation téléphone (au moins 8 chiffres)
         const phoneDigits = formData.identifier.replace(/[\s\-\(\)\+]/g, '');
         if (phoneDigits.length < 8) {
           newErrors.identifier = 'Numéro de téléphone invalide';
@@ -90,25 +90,25 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
     setLoading(true);
 
     try {
-      // Determine identifier type for submission
+      // Déterminer le type d'identifiant pour l'envoi
       const identifierType = getIdentifierType(formData.identifier);
       
       const loginData = {
         ...formData,
-        identifierType, // Send type to backend
+        identifierType, // Envoyer le type au backend
       };
       
       const response = await login(loginData);
       
-      // Redirect based on user type
+      // Redirection selon le type d'utilisateur
       if (onSuccess) {
         onSuccess();
       } else if (redirectTo) {
         navigate(redirectTo);
       } else {
-        // Automatic redirect based on userType
+        // Redirection automatique selon le userType
         const userType = response?.user?.userType || response?.userType;
-        if (userType === 'producer' || userType === 'producteur') {
+        if (userType === 'producteur' || userType === 'producer') {
           navigate('/dashboard/producteur');
         } else {
           navigate('/');
@@ -121,10 +121,10 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
     }
   };
 
-  // Determine icon to display based on content
+  // Déterminer l'icône à afficher en fonction du contenu
   const getInputIcon = () => {
     if (!formData.identifier) {
-      return <Mail />; // Default icon
+      return <Mail />; // Icône par défaut
     }
     const type = getIdentifierType(formData.identifier);
     return type === 'phone' ? <Phone /> : <Mail />;
@@ -144,7 +144,7 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
       )}
 
       <div className="space-y-4">
-        {/* Email or Phone */}
+        {/* Email ou Téléphone */}
         <Input
           label="Email ou numéro de téléphone"
           type="text"

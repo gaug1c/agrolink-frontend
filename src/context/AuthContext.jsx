@@ -1,22 +1,20 @@
 import React, { createContext, useState, useEffect } from 'react';
-import * as authService from '../services/api/authService';
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /**
-   * Charger l'utilisateur depuis le localStorage au démarrage
-   */
+  // Charger l'utilisateur depuis le localStorage au démarrage
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('user');
       const token = localStorage.getItem('token');
 
       if (storedUser && token) {
-        setUser(JSON.parse(storedUser));
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
       }
     } catch (error) {
       console.error('Erreur chargement utilisateur:', error);
@@ -28,46 +26,119 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
-   * Connexion (API réelle)
+   * Connexion
    */
   const login = async (credentials) => {
     try {
       setLoading(true);
+      
+      // VERSION AVEC API (décommenter quand prêt)
+      /*
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Identifiant ou mot de passe incorrect');
+      }
+      
+      const data = await response.json();
+      const { user: userData, token } = data;
+      */
 
-      const response = await authService.login(credentials);
-      const { user: userData, token } = response.data;
-
-      setUser(userData);
+      // VERSION SIMULÉE (supprimer une fois l'API prête)
+      console.log('🔐 Login avec:', credentials);
+      
+      // Simuler une réponse API
+      const userData = {
+        id: '123',
+        email: credentials.identifier,
+        userType: 'consommateur', // Changez en 'producteur' pour tester le dashboard
+        firstName: 'Test',
+        lastName: 'User',
+        phone: '+241 XX XX XX XX'
+      };
+      
+      const token = 'fake-jwt-token-' + Date.now();
+      
+      // Stocker dans localStorage
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('token', token);
+      
+      setUser(userData);
 
-      return response.data;
+      console.log('✅ Connexion réussie:', userData);
+      return { user: userData, token };
     } catch (error) {
-      console.error('❌ Erreur login:', error);
-      throw error;
+      console.error('❌ Erreur de connexion:', error);
+      throw new Error(error.message || 'Identifiant ou mot de passe incorrect');
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * Inscription (API réelle)
+   * Inscription
    */
   const register = async (formData) => {
     try {
       setLoading(true);
+      
+      // Extraire le userType
+      let userType = 'consommateur';
+      if (formData instanceof FormData) {
+        userType = formData.get('userType') || 'consommateur';
+      } else {
+        userType = formData.userType || 'consommateur';
+      }
 
-      const response = await authService.register(formData);
-      const { user: userData, token } = response.data;
+      console.log('📝 Inscription avec userType:', userType);
 
-      setUser(userData);
+      // VERSION AVEC API (décommenter quand prêt)
+      /*
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'inscription');
+      }
+      
+      const data = await response.json();
+      const { user: userData, token } = data;
+      */
+
+      // VERSION SIMULÉE (supprimer une fois l'API prête)
+      const userData = {
+        id: 'new-' + Date.now(),
+        userType: userType,
+        firstName: 'Nouveau',
+        lastName: 'Utilisateur',
+        email: formData instanceof FormData ? formData.get('email') : formData.email,
+        // Ajouter les champs producteur si c'est un producteur
+        ...(userType === 'producteur' && {
+          nomResponsable: formData instanceof FormData ? formData.get('nomResponsable') : formData.nomResponsable,
+          province: formData instanceof FormData ? formData.get('province') : formData.province,
+          villeProduction: formData instanceof FormData ? formData.get('villeProduction') : formData.villeProduction
+        })
+      };
+      
+      const token = 'fake-jwt-token-' + Date.now();
+      
+      // Stocker dans localStorage
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('token', token);
+      
+      setUser(userData);
 
-      return response.data;
+      console.log('✅ Inscription réussie:', userData);
+      return { user: userData, token };
     } catch (error) {
-      console.error('❌ Erreur inscription:', error);
-      throw error;
+      console.error('❌ Erreur d\'inscription:', error);
+      throw new Error(error.message || 'Une erreur est survenue lors de l\'inscription');
     } finally {
       setLoading(false);
     }
@@ -75,55 +146,63 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Déconnexion
+   * Note: La navigation est gérée par le composant qui appelle logout()
    */
-  const logout = async () => {
-    try {
-      await authService.logout();
-    } catch (e) {
-      // même si l'API échoue, on nettoie côté frontend
-      console.warn('Logout API error (ignored)');
-    } finally {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      setUser(null);
-    }
+  const logout = () => {
+    console.log('👋 Déconnexion');
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+    // Note: La redirection vers /connexion est maintenant gérée 
+    // par le composant qui appelle cette fonction (avec useNavigate)
   };
 
   /**
-   * Mettre à jour l'utilisateur localement
+   * Mettre à jour l'utilisateur
    */
   const updateUser = (updatedData) => {
     const updatedUser = { ...user, ...updatedData };
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
+    console.log('🔄 Utilisateur mis à jour:', updatedUser);
   };
 
   /**
-   * Helpers
+   * Vérifier si l'utilisateur est un producteur
    */
-  const isProducer = () =>
-    user?.userType === 'producteur' || user?.userType === 'producer';
+  const isProducer = () => {
+    return user?.userType === 'producteur' || user?.userType === 'producer';
+  };
 
-  const isConsumer = () =>
-    user?.userType === 'consommateur' || user?.userType === 'consumer';
+  /**
+   * Vérifier si l'utilisateur est un consommateur
+   */
+  const isConsumer = () => {
+    return user?.userType === 'consommateur' || user?.userType === 'consumer';
+  };
 
-  const getToken = () => localStorage.getItem('token');
+  /**
+   * Obtenir le token
+   */
+  const getToken = () => {
+    return localStorage.getItem('token');
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+    updateUser,
+    isProducer,
+    isConsumer,
+    getToken,
+    isAuthenticated: !!user
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        register,
-        logout,
-        updateUser,
-        isProducer,
-        isConsumer,
-        getToken,
-        isAuthenticated: !!user,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
