@@ -217,60 +217,66 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
+  if (!validate()) return;
 
-    if (!validate()) return;
+  setLoading(true);
 
-    setLoading(true);
+  try {
+    const submitData = new FormData();
 
-    try {
-      // Créer FormData pour l'envoi avec fichier
-      const submitData = new FormData();
-      
-      if (formData.userType === 'producteur') {
-        Object.keys(formData).forEach(key => {
-          if (key === 'typesProduction') {
-            submitData.append(key, JSON.stringify(formData[key]));
-          } else if (key === 'pieceIdentite' && formData[key]) {
-            submitData.append(key, formData[key]);
-          } else if (formData[key] !== null && formData[key] !== '') {
-            submitData.append(key, formData[key]);
-          }
-        });
-      } else {
-        // Pour consommateur, données simples
-        Object.keys(formData).forEach(key => {
-          if (formData[key] !== null && formData[key] !== '') {
-            submitData.append(key, formData[key]);
-          }
-        });
-      }
-
-      const response = await register(submitData);
-      setSuccess(true);
-      
-      setTimeout(() => {
-        if (onSuccess) {
-          onSuccess();
-        } else if (redirectTo) {
-          navigate(redirectTo);
-        } else {
-          // Redirection automatique selon le userType
-          const userType = response?.user?.userType || response?.userType || formData.userType;
-          if (userType === 'producteur' || userType === 'producer') {
-            navigate('/producteur/dashboard');
-          } else {
-            navigate('/');
-          }
+    if (formData.userType === 'producteur') {
+      Object.keys(formData).forEach(key => {
+        if (key === 'typesProduction') {
+          submitData.append(key, JSON.stringify(formData[key]));
+        } else if (key === 'pieceIdentite' && formData[key]) {
+          submitData.append(key, formData[key]);
+        } else if (formData[key] !== null && formData[key] !== '') {
+          submitData.append(key, formData[key]);
         }
-      }, 2000);
-    } catch (err) {
-      setError(err.message || 'Une erreur est survenue lors de l\'inscription');
-    } finally {
-      setLoading(false);
+      });
+    } else {
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== '') {
+          submitData.append(key, formData[key]);
+        }
+      });
     }
-  };
+
+    const response = await register(submitData);
+
+    // Vérifier que l'inscription a réussi côté backend
+    if (!response?.data?.user || !response?.data?.token) {
+      throw new Error(response?.data?.message || "Impossible de créer le compte");
+    }
+
+    // Succès
+    setSuccess(true);
+
+    setTimeout(() => {
+      if (onSuccess) {
+        onSuccess();
+      } else if (redirectTo) {
+        navigate(redirectTo);
+      } else {
+        const userType = response.data.user.userType || formData.userType;
+        if (userType === 'producteur' || userType === 'producer') {
+          navigate('/producteur/dashboard');
+        } else {
+          navigate('/');
+        }
+      }
+    }, 2000);
+
+  } catch (err) {
+    console.error('Erreur inscription:', err);
+    setError(err.response?.data?.message || err.message || "Une erreur est survenue");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (success) {
     return (
