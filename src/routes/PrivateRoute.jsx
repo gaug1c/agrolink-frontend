@@ -1,24 +1,21 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import Loader from '../components/common/Loader';
 
-const PrivateRoute = ({ requiredRole }) => {
-  const { isAuthenticated, loading, user } = useAuth();
+const PrivateRoute = ({ children, allowedUserTypes = [] }) => {
+  const { user, loading } = useAuth();
 
-  if (loading) {
-    return <Loader fullScreen text="Vérification..." />;
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
 
-  if (!isAuthenticated) {
-    return <Navigate to="/connexion" replace />;
-  }
+  if (!user) return <Navigate to="/connexion" replace />;
 
-  if (requiredRole && user?.userType !== requiredRole) {
+  if (allowedUserTypes.length && !allowedUserTypes.includes(user.role)) {
+    if (user.role === 'producteur' || user.role === 'producer')
+      return <Navigate to="/producer/dashboard" replace />;
     return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return children;
 };
 
 export default PrivateRoute;

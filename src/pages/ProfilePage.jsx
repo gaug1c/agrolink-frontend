@@ -14,7 +14,7 @@ const ProfilePage = () => {
   };
 
   // Déterminer si l'utilisateur est un producteur
-  const isProducer = user?.userType === 'producteur' || user?.userType === 'producer';
+  const isProducer = user?.role === 'producteur' || user?.role === 'producer';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

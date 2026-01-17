@@ -9,7 +9,7 @@ const ProducersSection = () => {
     {
       id: 1,
       name: 'Ferme Bio du Gabon',
-      image: '👨‍🌾',
+      image: 'https://www.lsi-africa.com/miniature/gabon-interdiction-poulet-importation-5805-1306871.jpg',
       location: 'Libreville',
       specialty: 'Maraîchage Bio',
       rating: 4.9,
@@ -21,7 +21,7 @@ const ProducersSection = () => {
     {
       id: 2,
       name: 'Élevage Traditionnel',
-      image: '🚜',
+      image: 'https://afrique.yearbook-media.com/wp-content/uploads/2024/03/vache-brune-mangeant-herbe-small.jpg',
       location: 'Franceville',
       specialty: 'Élevage de volailles',
       rating: 4.8,
@@ -32,9 +32,9 @@ const ProducersSection = () => {
     },
     {
       id: 3,
-      name: 'Jardin Tropical',
-      image: '👩‍🌾',
-      location: 'Port-Gentil',
+      name: 'Famille MENGUE & YASSIMA',
+      image: 'https://www.agenceafrique.com/wp-content/uploads/2014/12/gabon-programme-graine.jpg',
+      location: 'Mouila',
       specialty: 'Fruits tropicaux',
       rating: 4.7,
       reviews: 124,
@@ -52,22 +52,21 @@ const ProducersSection = () => {
             Nos <span className="text-green-600">Producteurs</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Rencontrez les agriculteurs et éleveurs locaux qui cultivent 
-            vos produits avec passion et savoir-faire
+            Rencontrez les agriculteurs et éleveurs locaux qui cultivent vos produits avec passion et savoir-faire
           </p>
         </div>
 
         {/* Producers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {producers.map((producer) => (
-            <Card 
-              key={producer.id} 
-              hover 
-              padding="none"
-              className="overflow-hidden group"
-            >
-              {/* Header with Image */}
-              <div className="bg-gradient-to-br from-green-100 to-green-200 p-8 relative">
+            <Card key={producer.id} hover padding="none" className="overflow-hidden group">
+              {/* Image plein fond */}
+              <div className="relative w-full h-64 overflow-hidden">
+                <img
+                  src={producer.image}
+                  alt={producer.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
                 {/* Badge */}
                 {producer.badge && (
                   <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
@@ -75,19 +74,12 @@ const ProducersSection = () => {
                     {producer.badge}
                   </div>
                 )}
-                
-                {/* Producer Image */}
-                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto text-5xl shadow-lg group-hover:scale-110 transition-transform">
-                  {producer.image}
-                </div>
               </div>
 
-              {/* Content */}
+              {/* Contenu */}
               <div className="p-6">
                 {/* Name */}
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {producer.name}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{producer.name}</h3>
 
                 {/* Location */}
                 <div className="flex items-center gap-2 text-gray-600 mb-3">
@@ -101,9 +93,7 @@ const ProducersSection = () => {
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-600 text-sm mb-4">
-                  {producer.description}
-                </p>
+                <p className="text-gray-600 text-sm mb-4">{producer.description}</p>
 
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -125,8 +115,8 @@ const ProducersSection = () => {
 
                 {/* CTA Button */}
                 <Link to={`/producers/${producer.id}`}>
-                  <Button 
-                    fullWidth 
+                  <Button
+                    fullWidth
                     variant="outline"
                     icon={<ArrowRight className="w-4 h-4" />}
                     iconPosition="right"
@@ -142,28 +132,18 @@ const ProducersSection = () => {
         {/* CTA Section */}
         <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-3xl p-8 md:p-12 text-white text-center">
           <div className="max-w-3xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Vous êtes producteur ?
-            </h3>
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">Vous êtes producteur ?</h3>
             <p className="text-green-100 mb-8 text-lg">
-              Rejoignez notre plateforme et vendez vos produits directement 
-              aux consommateurs gabonais
+              Rejoignez notre plateforme et vendez vos produits directement aux consommateurs gabonais
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/devenir-producteur">
-                <Button 
-                  size="lg"
-                  className="bg-white text-green-800 hover:bg-green-50"
-                >
+                <Button size="lg" className="bg-white text-green-800 hover:bg-green-50">
                   Devenir producteur
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-white text-white hover:bg-white hover:text-green-800"
-                >
+                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-green-800">
                   Nous contacter
                 </Button>
               </Link>
@@ -173,45 +153,20 @@ const ProducersSection = () => {
 
         {/* Benefits */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-12">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">🎯</span>
+          {[
+            { icon: '🎯', title: 'Visibilité', desc: 'Touchez des milliers de clients' },
+            { icon: '💰', title: 'Revenus', desc: 'Meilleurs prix garantis' },
+            { icon: '📱', title: 'Simplicité', desc: 'Gestion facile en ligne' },
+            { icon: '🤝', title: 'Support', desc: 'Accompagnement personnalisé' },
+          ].map((b, i) => (
+            <div key={i} className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">{b.icon}</span>
+              </div>
+              <h4 className="font-bold text-gray-800 mb-2">{b.title}</h4>
+              <p className="text-gray-600 text-sm">{b.desc}</p>
             </div>
-            <h4 className="font-bold text-gray-800 mb-2">Visibilité</h4>
-            <p className="text-gray-600 text-sm">
-              Touchez des milliers de clients
-            </p>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">💰</span>
-            </div>
-            <h4 className="font-bold text-gray-800 mb-2">Revenus</h4>
-            <p className="text-gray-600 text-sm">
-              Meilleurs prix garantis
-            </p>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">📱</span>
-            </div>
-            <h4 className="font-bold text-gray-800 mb-2">Simplicité</h4>
-            <p className="text-gray-600 text-sm">
-              Gestion facile en ligne
-            </p>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">🤝</span>
-            </div>
-            <h4 className="font-bold text-gray-800 mb-2">Support</h4>
-            <p className="text-gray-600 text-sm">
-              Accompagnement personnalisé
-            </p>
-          </div>
+          ))}
         </div>
       </div>
     </section>

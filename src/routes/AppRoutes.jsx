@@ -19,7 +19,7 @@ import AboutPage from '../pages/AboutPage';
 import ContactPage from '../pages/ContactPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
-// Pages consommateur (protégées)
+// Pages consommateur
 import ProfilePage from '../pages/ProfilePage';
 import CartPage from '../pages/CartPage';
 import CheckoutPage from '../pages/CheckoutPage';
@@ -32,7 +32,7 @@ import OrderManagement from '../components/producer/OrderManagement';
 import SalesHistory from '../components/producer/SalesHistory';
 
 // Composant de route protégée
-const PrivateRoute = ({ children, allowedUserTypes = [] }) => {
+const PrivateRoute = ({ children, allowedRoles = [] }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -50,44 +50,26 @@ const PrivateRoute = ({ children, allowedUserTypes = [] }) => {
     return <Navigate to="/connexion" replace />;
   }
 
-  // Si des types d'utilisateurs sont spécifiés, vérifier
-  if (allowedUserTypes.length > 0 && !allowedUserTypes.includes(user.userType)) {
-    // Rediriger vers la page appropriée selon le type d'utilisateur
-    if (user.userType === 'producteur' || user.userType === 'producer') {
-      return <Navigate to="/producteur/dashboard" replace />;
+  // Vérification du rôle
+  if (allowedRoles.length > 0) {
+    const isAllowed = allowedRoles.includes(user.role);
+    
+    if (!isAllowed) {
+      // Redirection selon le rôle
+      if (user.role === 'producteur' || user.role === 'producer') {
+        return <Navigate to="/producer/dashboard" replace />;
+      }
+      return <Navigate to="/" replace />;
     }
-    return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
-// Routes producteur
-const ProducerRoutes = () => {
-  return (
-    <Routes>
-      <Route path="dashboard" element={<ProducerDashboard />} />
-      <Route path="produits" element={<ProductManagement />} />
-      <Route path="produits/ajouter" element={<AddEditProduct />} />
-      <Route path="produits/:productId/modifier" element={<AddEditProduct />} />
-      <Route path="commandes" element={<OrderManagement />} />
-      <Route path="historique" element={<SalesHistory />} />
-      
-      {/* Routes à implémenter */}
-      <Route path="messages" element={<ComingSoonPage title="Messagerie" />} />
-      <Route path="notifications" element={<ComingSoonPage title="Notifications" />} />
-      <Route path="parametres" element={<ComingSoonPage title="Paramètres" />} />
-      
-      {/* Redirection par défaut */}
-      <Route path="*" element={<Navigate to="/producteur/dashboard" replace />} />
-    </Routes>
-  );
-};
-
 // Page "Bientôt disponible"
 const ComingSoonPage = ({ title }) => (
-  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-    <div className="text-center">
+  <div className="p-6">
+    <div className="bg-white rounded-lg shadow p-8 text-center">
       <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
       <p className="text-gray-600">Cette page sera bientôt disponible</p>
     </div>
@@ -143,15 +125,28 @@ const AppRoutes = () => {
         />
       </Route>
 
-      {/* Routes producteur protégées */}
+      {/* Routes producteur protégées avec DashboardLayout */}
       <Route
-        path="/producteur/*"
+        path="/producer"
         element={
-          <PrivateRoute allowedUserTypes={['producteur', 'producer']}>
-            <ProducerRoutes />
+          <PrivateRoute allowedRoles={['producteur', 'producer']}>
+            <DashboardLayout />
           </PrivateRoute>
         }
-      />
+      >
+        <Route path="dashboard" element={<ProducerDashboard />} />
+        <Route path="produits" element={<ProductManagement />} />
+        <Route path="produits/ajouter" element={<AddEditProduct />} />
+        <Route path="produits/:productId/modifier" element={<AddEditProduct />} />
+        <Route path="commandes" element={<OrderManagement />} />
+        <Route path="historique" element={<SalesHistory />} />
+        <Route path="messages" element={<ComingSoonPage title="Messagerie" />} />
+        <Route path="notifications" element={<ComingSoonPage title="Notifications" />} />
+        <Route path="parametres" element={<ComingSoonPage title="Paramètres" />} />
+        
+        {/* Redirection par défaut */}
+        <Route index element={<Navigate to="dashboard" replace />} />
+      </Route>
 
       {/* Route 404 */}
       <Route path="*" element={<NotFoundPage />} />

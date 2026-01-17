@@ -208,7 +208,7 @@ const ProducerDashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate('/producteur/produits/ajouter')}
+              onClick={() => navigate('/producer/produits/ajouter')}
               className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -233,7 +233,7 @@ const ProducerDashboard = () => {
               </div>
             </div>
             <button 
-              onClick={() => navigate('/producteur/produits')}
+              onClick={() => navigate('/producer/produits')}
               className="text-blue-600 text-sm font-medium mt-4 hover:underline"
             >
               Voir tous les produits →
@@ -252,7 +252,7 @@ const ProducerDashboard = () => {
               </div>
             </div>
             <button 
-              onClick={() => navigate('/producteur/commandes')}
+              onClick={() => navigate('/producer/commandes')}
               className="text-yellow-600 text-sm font-medium mt-4 hover:underline"
             >
               Voir les commandes →
@@ -273,7 +273,7 @@ const ProducerDashboard = () => {
               </div>
             </div>
             <button 
-              onClick={() => navigate('/producteur/historique')}
+              onClick={() => navigate('/producer/historique')}
               className="text-green-600 text-sm font-medium mt-4 hover:underline"
             >
               Voir l'historique →
@@ -304,7 +304,7 @@ const ProducerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-bold text-gray-900">Commandes récentes</h2>
                   <button 
-                    onClick={() => navigate('/producteur/commandes')}
+                    onClick={() => navigate('/producer/commandes')}
                     className="text-green-600 text-sm font-medium hover:underline"
                   >
                     Voir tout
@@ -363,7 +363,7 @@ const ProducerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-bold text-gray-900">Mes produits</h2>
                   <button 
-                    onClick={() => navigate('/producteur/produits')}
+                    onClick={() => navigate('/producer/produits')}
                     className="text-green-600 text-sm font-medium hover:underline"
                   >
                     Gérer tous
@@ -411,7 +411,7 @@ const ProducerDashboard = () => {
                     <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p>Aucun produit ajouté</p>
                     <button
-                      onClick={() => navigate('/producteur/produits/ajouter')}
+                      onClick={() => navigate('/producer/produits/ajouter')}
                       className="mt-4 text-green-600 font-medium hover:underline"
                     >
                       Ajouter votre premier produit
@@ -521,7 +521,7 @@ const ProducerDashboard = () => {
                 Vous avez 3 nouveaux messages
               </p>
               <button 
-                onClick={() => navigate('/producteur/messages')}
+                onClick={() => navigate('/producer/messages')}
                 className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium"
               >
                 Voir les messages

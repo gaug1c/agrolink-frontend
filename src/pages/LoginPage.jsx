@@ -51,36 +51,33 @@ const LoginPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    if (!validate()) return;
+  if (!validate()) return;
+  setLoading(true);
 
-    setLoading(true);
+  try {
+    // login retourne { user, token }
+    const { user } = await login({
+      email: formData.email,
+      password: formData.password,
+    });
 
-    try {
-      // 🔥 PAYLOAD COMPATIBLE BACK-END
-      const response = await login({
-        email: formData.email,
-        password: formData.password,
-      });
+    const role = user?.role;
 
-      const userType = response?.data?.user?.userType;
-
-      if (userType === 'producteur' || userType === 'producer') {
-        navigate('/producer/dashboard');
-      } else {
-        navigate('/');
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        'Email ou mot de passe incorrect'
-      );
-    } finally {
-      setLoading(false);
+    if (role === 'producteur' || role === 'producer') {
+      navigate('/producer/dashboard');
+    } else {
+      navigate('/');
     }
-  };
+  } catch (err) {
+    setError(err.message || 'Email ou mot de passe incorrect');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div>
