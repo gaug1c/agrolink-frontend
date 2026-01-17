@@ -2,13 +2,13 @@ import React from 'react';
 import { ShoppingBag, Sprout, Check } from 'lucide-react';
 
 const UserTypeSelector = ({ 
-  selected = 'consommateur', 
+  selected = 'consumer', 
   onChange,
   className = '' 
 }) => {
   const userTypes = [
     {
-      id: 'consommateur',
+      id: 'consumer',
       title: 'Consommateur',
       description: 'J\'achète des produits agricoles locaux',
       icon: ShoppingBag,
@@ -20,7 +20,7 @@ const UserTypeSelector = ({
       color: 'from-blue-500 to-blue-600',
     },
     {
-      id: 'producteur',
+      id: 'producer',
       title: 'Producteur',
       description: 'Je vends mes produits agricoles',
       icon: Sprout,
@@ -106,7 +106,7 @@ const UserTypeSelector = ({
 
 // Variante compacte (boutons simples)
 export const CompactUserTypeSelector = ({ 
-  selected = 'consommateur', 
+  selected = 'consumer', 
   onChange,
   className = '' 
 }) => {
@@ -117,28 +117,28 @@ export const CompactUserTypeSelector = ({
       </label>
       <div className="grid grid-cols-2 gap-3">
         <button
-          onClick={() => onChange('consommateur')}
+          onClick={() => onChange('consumer')}
           className={`
             py-3 px-4 rounded-xl font-semibold transition-all
-            ${selected === 'consommateur'
+            ${selected === 'consumer'
               ? 'bg-green-600 text-white shadow-lg scale-105'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }
           `}
         >
-          Consommateur
+          consumer
         </button>
         <button
-          onClick={() => onChange('producteur')}
+          onClick={() => onChange('producer')}
           className={`
             py-3 px-4 rounded-xl font-semibold transition-all
-            ${selected === 'producteur'
+            ${selected === 'producer'
               ? 'bg-green-600 text-white shadow-lg scale-105'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }
           `}
         >
-          Producteur
+          producer
         </button>
       </div>
     </div>

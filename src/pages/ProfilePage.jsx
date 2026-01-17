@@ -254,7 +254,7 @@ const ProfilePage = () => {
                       </label>
                       <input
                         type="text"
-                        value={user?.firstName || user?.prenom || ''}
+                        value={user?.first_name || user?.prenom || ''}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                         readOnly
                       />
@@ -265,7 +265,7 @@ const ProfilePage = () => {
                       </label>
                       <input
                         type="text"
-                        value={user?.lastName || user?.nom || ''}
+                        value={user?.last_name || user?.nom || ''}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                         readOnly
                       />

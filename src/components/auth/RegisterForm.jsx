@@ -15,7 +15,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    userType: 'consommateur',
+    userType: 'consumer',
     // Champs communs
     email: '',
     password: '',
@@ -23,9 +23,9 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     acceptTerms: false,
     
     // Champs consommateur
-    nom: '',
-    prenom: '',
-    telephone: '',
+    last_name: '',
+    first_name: '',
+    phone: '',
     adresse: '',
     ville: '',
     
@@ -40,7 +40,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     surfaceCultivee: '',
     uniteSurface: 'hectare',
     quantiteDisponible: '',
-    telephoneProducteur: '',
+    phoneProducteur: '',
     isWhatsApp: false,
     emailProducteur: '',
     possibiliteLivraison: '',
@@ -145,10 +145,10 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (formData.userType === 'consommateur') {
+    if (formData.userType === 'consumer') {
       // Validation consommateur
-      if (!formData.nom.trim()) newErrors.nom = 'Nom requis';
-      if (!formData.prenom.trim()) newErrors.prenom = 'Prénom requis';
+      if (!formData.last_name.trim()) newErrors.last_name = 'Nom requis';
+      if (!formData.first_name.trim()) newErrors.first_name = 'Prénom requis';
       
       if (!formData.email) {
         newErrors.email = 'Email requis';
@@ -156,10 +156,10 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
         newErrors.email = 'Email invalide';
       }
 
-      if (!formData.telephone) {
-        newErrors.telephone = 'Téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.telephone.replace(/\s/g, ''))) {
-        newErrors.telephone = 'Numéro invalide';
+      if (!formData.phone) {
+        newErrors.phone = 'Téléphone requis';
+      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phone.replace(/\s/g, ''))) {
+        newErrors.phone = 'Numéro invalide';
       }
 
       if (!formData.ville) newErrors.ville = 'Ville requise';
@@ -182,10 +182,10 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
         newErrors.villeProduction = 'Ville ou village requis';
       }
 
-      if (!formData.telephoneProducteur) {
-        newErrors.telephoneProducteur = 'Numéro de téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.telephoneProducteur.replace(/\s/g, ''))) {
-        newErrors.telephoneProducteur = 'Numéro invalide';
+      if (!formData.phoneProducteur) {
+        newErrors.phoneProducteur = 'Numéro de téléphone requis';
+      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phoneProducteur.replace(/\s/g, ''))) {
+        newErrors.phoneProducteur = 'Numéro invalide';
       }
 
       if (formData.emailProducteur && !/\S+@\S+\.\S+/.test(formData.emailProducteur)) {
@@ -313,27 +313,27 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
         />
 
         {/* CHAMPS CONSOMMATEUR */}
-        {formData.userType === 'consommateur' && (
+        {formData.userType === 'consumer' && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 label="Prénom"
-                name="prenom"
-                value={formData.prenom}
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
                 placeholder="Jean"
                 icon={<User />}
-                error={errors.prenom}
+                error={errors.first_name}
                 required
               />
               <Input
                 label="Nom"
-                name="nom"
-                value={formData.nom}
+                name="last_name"
+                value={formData.last_name}
                 onChange={handleChange}
                 placeholder="Dupont"
                 icon={<User />}
-                error={errors.nom}
+                error={errors.last_name}
                 required
               />
             </div>
@@ -353,12 +353,12 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
             <Input
               label="Téléphone"
               type="tel"
-              name="telephone"
-              value={formData.telephone}
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               placeholder="+241 XX XX XX XX"
               icon={<Phone />}
-              error={errors.telephone}
+              error={errors.phone}
               required
             />
 
@@ -525,12 +525,12 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               <Input
                 label="Numéro de téléphone"
                 type="tel"
-                name="telephoneProducteur"
-                value={formData.telephoneProducteur}
+                name="phoneProducteur"
+                value={formData.phoneProducteur}
                 onChange={handleChange}
                 placeholder="+241 XX XX XX XX"
                 icon={<Phone />}
-                error={errors.telephoneProducteur}
+                error={errors.phoneProducteur}
                 required
               />
               <div className="mt-2">

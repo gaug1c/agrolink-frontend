@@ -2,14 +2,15 @@ import axios from 'axios';
 
 // Configuration de base d'axios 
 // IMPORTANT: Remplacez l'URL par celle de votre API backend
-const API_URL = import.meta.env.VITE_API_URL || 'https://agrolink-backend-z.up.railway.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 const instance = axios.create({
   baseURL: API_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'multipart/form-data', 
+  },
+  withCredentials: false,
 });
 
 // Intercepteur de requête - Ajouter le token à chaque requête

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, LogIn, Phone } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import { Checkbox } from '../common/Input';
@@ -10,30 +10,18 @@ import Alert from '../common/Alert';
 const LoginForm = ({ onSuccess, redirectTo }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [formData, setFormData] = useState({
-    identifier: '', // Email ou téléphone
+    email: '',
     password: '',
     remember: false,
   });
 
   const [errors, setErrors] = useState({});
-
-  // Détecte si l'identifiant est un email ou un numéro de téléphone
-  const getIdentifierType = (value) => {
-    // Si contient @ c'est un email
-    if (value.includes('@')) {
-      return 'email';
-    }
-    // Si contient seulement des chiffres, espaces, +, - ou () c'est un téléphone
-    if (/^[\d\s\+\-\(\)]+$/.test(value)) {
-      return 'phone';
-    }
-    return 'unknown';
-  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -41,7 +29,7 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
-    // Clear error for this field
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -50,25 +38,10 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.identifier) {
-      newErrors.identifier = 'Email ou numéro de téléphone requis';
-    } else {
-      const identifierType = getIdentifierType(formData.identifier);
-      
-      if (identifierType === 'email') {
-        // Validation email
-        if (!/\S+@\S+\.\S+/.test(formData.identifier)) {
-          newErrors.identifier = 'Email invalide';
-        }
-      } else if (identifierType === 'phone') {
-        // Validation téléphone (au moins 8 chiffres)
-        const phoneDigits = formData.identifier.replace(/[\s\-\(\)\+]/g, '');
-        if (phoneDigits.length < 8) {
-          newErrors.identifier = 'Numéro de téléphone invalide';
-        }
-      } else {
-        newErrors.identifier = 'Format invalide. Utilisez un email ou un numéro de téléphone';
-      }
+    if (!formData.email) {
+      newErrors.email = 'Adresse email requise';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Adresse email invalide';
     }
 
     if (!formData.password) {
@@ -90,44 +63,29 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
     setLoading(true);
 
     try {
-      // Déterminer le type d'identifiant pour l'envoi
-      const identifierType = getIdentifierType(formData.identifier);
-      
-      const loginData = {
-        ...formData,
-        identifierType, // Envoyer le type au backend
-      };
-      
-      const response = await login(loginData);
-      
-      // Redirection selon le type d'utilisateur
+      // 🔥 BACK-END COMPATIBLE
+      const response = await login({
+        email: formData.email,
+        password: formData.password,
+      });
+
       if (onSuccess) {
         onSuccess();
       } else if (redirectTo) {
         navigate(redirectTo);
       } else {
-        // Redirection automatique selon le userType
-        const userType = response?.user?.userType || response?.userType;
-        if (userType === 'producteur' || userType === 'producer') {
+        const userType = response?.data?.user?.userType;
+        if (userType === 'producer') {
           navigate('/dashboard/producteur');
         } else {
           navigate('/');
         }
       }
     } catch (err) {
-      setError(err.message || 'Identifiant ou mot de passe incorrect');
+      setError(err.message || 'Email ou mot de passe incorrect');
     } finally {
       setLoading(false);
     }
-  };
-
-  // Déterminer l'icône à afficher en fonction du contenu
-  const getInputIcon = () => {
-    if (!formData.identifier) {
-      return <Mail />; // Icône par défaut
-    }
-    const type = getIdentifierType(formData.identifier);
-    return type === 'phone' ? <Phone /> : <Mail />;
   };
 
   return (
@@ -144,16 +102,16 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
       )}
 
       <div className="space-y-4">
-        {/* Email ou Téléphone */}
+        {/* Email */}
         <Input
-          label="Email ou numéro de téléphone"
-          type="text"
-          name="identifier"
-          value={formData.identifier}
+          label="Adresse email"
+          type="email"
+          name="email"
+          value={formData.email}
           onChange={handleChange}
-          placeholder="exemple@email.com ou +241 XX XX XX XX"
-          icon={getInputIcon()}
-          error={errors.identifier}
+          placeholder="exemple@email.com"
+          icon={<Mail />}
+          error={errors.email}
           required
         />
 
@@ -187,15 +145,15 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
             onChange={handleChange}
             label="Se souvenir de moi"
           />
-          <Link 
-            to="/mot-de-passe-oublie" 
+          <Link
+            to="/mot-de-passe-oublie"
             className="text-sm text-green-600 hover:text-green-700 font-semibold hover:underline"
           >
             Mot de passe oublié ?
           </Link>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <Button
           fullWidth
           size="lg"
@@ -206,12 +164,12 @@ const LoginForm = ({ onSuccess, redirectTo }) => {
           {loading ? 'Connexion...' : 'Se connecter'}
         </Button>
 
-        {/* Sign Up Link */}
+        {/* Sign Up */}
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Vous n'avez pas de compte ?{' '}
-            <Link 
-              to="/inscription" 
+            <Link
+              to="/inscription"
               className="text-green-600 hover:text-green-700 font-bold hover:underline"
             >
               S'inscrire gratuitement

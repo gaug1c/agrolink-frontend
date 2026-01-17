@@ -109,7 +109,7 @@ const UserProfile = ({ user, onUpdate }) => {
               {user?.prenom} {user?.nom}
             </h1>
             <p className="text-gray-600 mb-6">
-              {user?.userType === 'producteur' ? 'Producteur' : 'Consommateur'}
+              {user?.userType === 'producer' ? 'producer' : 'cusomer'}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
