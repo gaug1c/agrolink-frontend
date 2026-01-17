@@ -10,7 +10,6 @@ const Card = ({
   onClick,
   ...props
 }) => {
-  // Variants
   const variants = {
     default: 'bg-white border border-gray-200',
     primary: 'bg-green-50 border border-green-200',
@@ -21,7 +20,6 @@ const Card = ({
     gradient: 'bg-gradient-to-br from-green-50 to-green-100 border border-green-200',
   };
 
-  // Padding
   const paddings = {
     none: '',
     sm: 'p-3',
@@ -30,7 +28,6 @@ const Card = ({
     xl: 'p-8 md:p-12',
   };
 
-  // Shadow
   const shadows = {
     none: '',
     sm: 'shadow-sm',
@@ -39,20 +36,17 @@ const Card = ({
     xl: 'shadow-xl',
   };
 
-  // Hover effect
   const hoverEffect = hover ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : '';
 
   return (
     <div
       onClick={onClick}
-      className={`
-        rounded-xl transition-all duration-300
+      className={`rounded-xl transition-all duration-300
         ${variants[variant]}
         ${paddings[padding]}
         ${shadows[shadow]}
         ${hoverEffect}
-        ${className}
-      `}
+        ${className}`}
       {...props}
     >
       {children}
@@ -61,28 +55,12 @@ const Card = ({
 };
 
 // Card Header
-export const CardHeader = ({ 
-  children, 
-  className = '',
-  ...props 
-}) => {
-  return (
-    <div 
-      className={`mb-4 ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+export const CardHeader = ({ children, className = '', ...props }) => (
+  <div className={`mb-4 ${className}`} {...props}>{children}</div>
+);
 
 // Card Title
-export const CardTitle = ({ 
-  children, 
-  size = 'xl',
-  className = '',
-  ...props 
-}) => {
+export const CardTitle = ({ children, size = 'xl', className = '', ...props }) => {
   const sizes = {
     sm: 'text-sm',
     md: 'text-base',
@@ -91,71 +69,29 @@ export const CardTitle = ({
     '2xl': 'text-2xl',
     '3xl': 'text-3xl',
   };
-
-  return (
-    <h3 
-      className={`font-bold text-gray-800 ${sizes[size]} ${className}`}
-      {...props}
-    >
-      {children}
-    </h3>
-  );
+  return <h3 className={`font-bold text-gray-800 ${sizes[size]} ${className}`} {...props}>{children}</h3>;
 };
 
 // Card Description
-export const CardDescription = ({ 
-  children, 
-  className = '',
-  ...props 
-}) => {
-  return (
-    <p 
-      className={`text-gray-600 text-sm mt-1 ${className}`}
-      {...props}
-    >
-      {children}
-    </p>
-  );
-};
+export const CardDescription = ({ children, className = '', ...props }) => (
+  <p className={`text-gray-600 text-sm mt-1 ${className}`} {...props}>{children}</p>
+);
 
 // Card Body
-export const CardBody = ({ 
-  children, 
-  className = '',
-  ...props 
-}) => {
-  return (
-    <div 
-      className={`${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+export const CardBody = ({ children, className = '', ...props }) => (
+  <div className={`${className}`} {...props}>{children}</div>
+);
 
 // Card Footer
-export const CardFooter = ({ 
-  children, 
-  className = '',
-  divided = false,
-  ...props 
-}) => {
-  return (
-    <div 
-      className={`
-        mt-4
-        ${divided ? 'pt-4 border-t border-gray-200' : ''}
-        ${className}
-      `}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+export const CardFooter = ({ children, className = '', divided = false, ...props }) => (
+  <div className={`mt-4 ${divided ? 'pt-4 border-t border-gray-200' : ''} ${className}`} {...props}>
+    {children}
+  </div>
+);
 
-// Product Card (Composant spécialisé)
+// =====================
+// ProductCard corrigé
+// =====================
 export const ProductCard = ({
   image,
   title,
@@ -169,18 +105,16 @@ export const ProductCard = ({
   className = '',
 }) => {
   return (
-    <Card
-      hover
-      padding="none"
-      className={`overflow-hidden group ${className}`}
-      onClick={onClick}
-    >
-      {/* Image */}
+    <Card hover padding="none" className={`overflow-hidden group ${className}`} onClick={onClick}>
+      {/* IMAGE */}
       <div className="relative h-48 bg-gradient-to-br from-green-100 to-green-200 overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-300">
-          {image}
-        </div>
-        
+        {/* Image réelle */}
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+
         {/* Badge */}
         {badge && (
           <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
@@ -189,25 +123,21 @@ export const ProductCard = ({
         )}
       </div>
 
-      {/* Content */}
+      {/* CONTENU */}
       <div className="p-4">
         {/* Category */}
         {category && (
-          <span className="inline-block text-xs text-green-600 font-semibold mb-2">
-            {category}
-          </span>
+          <span className="inline-block text-xs text-green-600 font-semibold mb-2">{category}</span>
         )}
 
         {/* Title */}
-        <h3 className="font-bold text-lg mb-2 text-gray-800 line-clamp-2">
-          {title}
-        </h3>
+        <h3 className="font-bold text-lg mb-2 text-gray-800 line-clamp-2">{title}</h3>
 
         {/* Rating */}
         {rating && (
           <div className="flex items-center gap-1 mb-3">
             {[...Array(5)].map((_, i) => (
-              <span key={i} className={i < rating ? 'text-yellow-400' : 'text-gray-300'}>
+              <span key={i} className={i < Math.round(rating) ? 'text-yellow-400' : 'text-gray-300'}>
                 ★
               </span>
             ))}
@@ -217,17 +147,13 @@ export const ProductCard = ({
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-2xl font-bold text-green-600">
-            {price} FCFA
-          </span>
+          <span className="text-2xl font-bold text-green-600">{price} FCFA</span>
           {oldPrice && (
-            <span className="text-sm text-gray-400 line-through">
-              {oldPrice} FCFA
-            </span>
+            <span className="text-sm text-gray-400 line-through">{oldPrice} FCFA</span>
           )}
         </div>
 
-        {/* Add to Cart Button */}
+        {/* Add to Cart */}
         {onAddToCart && (
           <button
             onClick={(e) => {
@@ -238,45 +164,6 @@ export const ProductCard = ({
           >
             Ajouter au panier
           </button>
-        )}
-      </div>
-    </Card>
-  );
-};
-
-// Stats Card (Composant spécialisé)
-export const StatsCard = ({
-  title,
-  value,
-  icon,
-  trend,
-  trendValue,
-  color = 'green',
-  className = '',
-}) => {
-  const colors = {
-    green: 'bg-green-50 text-green-600',
-    blue: 'bg-blue-50 text-blue-600',
-    red: 'bg-red-50 text-red-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-  };
-
-  return (
-    <Card hover className={className}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-gray-600 text-sm mb-1">{title}</p>
-          <p className="text-3xl font-bold text-gray-800 mb-2">{value}</p>
-          {trend && (
-            <p className={`text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-              {trend === 'up' ? '↑' : '↓'} {trendValue}
-            </p>
-          )}
-        </div>
-        {icon && (
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${colors[color]}`}>
-            {icon}
-          </div>
         )}
       </div>
     </Card>

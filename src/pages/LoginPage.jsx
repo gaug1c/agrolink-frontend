@@ -68,7 +68,7 @@ const LoginPage = () => {
       const userType = response?.data?.user?.userType;
 
       if (userType === 'producteur' || userType === 'producer') {
-        navigate('/producteur/dashboard');
+        navigate('/producer/dashboard');
       } else {
         navigate('/');
       }

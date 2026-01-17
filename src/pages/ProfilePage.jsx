@@ -36,13 +36,13 @@ const ProfilePage = () => {
                     ? (user?.nomResponsable || user?.firstName) 
                     : `${user?.firstName || user?.prenom || ''} ${user?.lastName || user?.nom || ''}`}
                 </h3>
-                <p className="text-gray-600 text-sm">{user?.email || user?.emailProducteur}</p>
+                <p className="text-gray-600 text-sm">{user?.email || user?.emailproducer}</p>
                 <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
                   isProducer 
                     ? 'bg-green-100 text-green-800' 
                     : 'bg-blue-100 text-blue-800'
                 }`}>
-                  {isProducer ? 'Producteur' : 'Consommateur'}
+                  {isProducer ? 'producteur' : 'consommateur'}
                 </span>
               </div>
               <nav className="space-y-2">
@@ -53,21 +53,21 @@ const ProfilePage = () => {
                 {isProducer ? (
                   <>
                     <button 
-                      onClick={() => navigate('/producteur/dashboard')}
+                      onClick={() => navigate('/producer/dashboard')}
                       className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
                     >
                       <Store className="h-5 w-5" />
                       <span>Mon dashboard</span>
                     </button>
                     <button 
-                      onClick={() => navigate('/producteur/produits')}
+                      onClick={() => navigate('/producer/produits')}
                       className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
                     >
                       <Package className="h-5 w-5" />
                       <span>Mes produits</span>
                     </button>
                     <button 
-                      onClick={() => navigate('/producteur/commandes')}
+                      onClick={() => navigate('/producer/commandes')}
                       className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
                     >
                       <ShoppingBag className="h-5 w-5" />
@@ -223,19 +223,19 @@ const ProfilePage = () => {
                         </label>
                         <input
                           type="tel"
-                          value={user?.telephoneProducteur || user?.phone || ''}
+                          value={user?.phoneproducer || user?.phone || ''}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                           readOnly
                         />
                       </div>
-                      {user?.emailProducteur && (
+                      {user?.emailproducer && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Email
                           </label>
                           <input
                             type="email"
-                            value={user?.emailProducteur || ''}
+                            value={user?.emailproducer || ''}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                             readOnly
                           />

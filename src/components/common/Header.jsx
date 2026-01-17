@@ -172,7 +172,7 @@ const Header = () => {
             <Link to="/produits" className="hover:text-green-300 transition font-medium">
               Nos Produits
             </Link>
-            <Link to="/producteurs" className="hover:text-green-300 transition font-medium">
+            <Link to="/producers" className="hover:text-green-300 transition font-medium">
               Nos Producteurs
             </Link>
             <Link to="/categories" className="hover:text-green-300 transition font-medium">
@@ -220,7 +220,7 @@ const Header = () => {
                 Nos Produits
               </Link>
               <Link 
-                to="/producteurs" 
+                to="/producers" 
                 className="px-4 py-3 hover:bg-green-700 rounded-lg transition"
                 onClick={() => setMobileMenuOpen(false)}
               >

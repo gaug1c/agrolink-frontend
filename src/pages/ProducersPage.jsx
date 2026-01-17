@@ -47,7 +47,7 @@ const ProducersPage = () => {
           {producers.map(producer => (
             <Link
               key={producer.id}
-              to={`/producteurs/${producer.id}`}
+              to={`/producers/${producer.id}`}
               className="bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden"
             >
               <img

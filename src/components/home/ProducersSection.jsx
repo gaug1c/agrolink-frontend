@@ -124,7 +124,7 @@ const ProducersSection = () => {
                 </div>
 
                 {/* CTA Button */}
-                <Link to={`/producteurs/${producer.id}`}>
+                <Link to={`/producers/${producer.id}`}>
                   <Button 
                     fullWidth 
                     variant="outline"

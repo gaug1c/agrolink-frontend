@@ -261,7 +261,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     // ✅ REDIRECTION
     setTimeout(() => {
       if (response.user.role === 'producer') {
-        navigate('/producteur/dashboard');
+        navigate('/producer/dashboard');
       } else {
         navigate('/'); // consommateur redirigé vers la home
       }

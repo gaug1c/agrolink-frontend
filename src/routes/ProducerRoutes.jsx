@@ -46,7 +46,7 @@ const ProducerRoutes = () => {
       <Route path="parametres" element={<ProducerSettings />} />
       
       {/* Redirection par défaut */}
-      <Route path="*" element={<Navigate to="/producteur/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/producer/dashboard" replace />} />
     </Routes>
   );
 };
