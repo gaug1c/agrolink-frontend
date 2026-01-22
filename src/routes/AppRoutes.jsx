@@ -83,8 +83,8 @@ const AppRoutes = () => {
       {/* Routes publiques avec MainLayout */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/produits" element={<ProductsPage />} />
-        <Route path="/produits/:id" element={<ProductDetailPage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/producers" element={<ProducersPage />} />
         <Route path="/producers/:id" element={<ProducerDetailPage />} />
         <Route path="/a-propos" element={<AboutPage />} />
@@ -135,9 +135,9 @@ const AppRoutes = () => {
         }
       >
         <Route path="dashboard" element={<ProducerDashboard />} />
-        <Route path="produits" element={<ProductManagement />} />
-        <Route path="produits/ajouter" element={<AddEditProduct />} />
-        <Route path="produits/:productId/modifier" element={<AddEditProduct />} />
+        <Route path="products" element={<ProductManagement />} />
+        <Route path="products/ajouter" element={<AddEditProduct />} />
+        <Route path="products/:productId/modifier" element={<AddEditProduct />} />
         <Route path="commandes" element={<OrderManagement />} />
         <Route path="historique" element={<SalesHistory />} />
         <Route path="messages" element={<ComingSoonPage title="Messagerie" />} />

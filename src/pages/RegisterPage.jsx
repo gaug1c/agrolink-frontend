@@ -22,17 +22,16 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     password_confirmation: '',
     acceptTerms: false,
     
-    // Champs consumer
+    // Champs communs: nom et prénom
     last_name: '',
     first_name: '',
     phone: '',
     adresse: '',
     city: '',
     
-    // Champs producteur
-    nomResponsable: '',
+    // Champs producteur spécifiques
     nomStructure: '',
-    productionTypes: [],
+    typesProduction: [],
     autreProduction: '',
     province: '',
     cityProduction: '',
@@ -40,9 +39,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     surfaceCultivee: '',
     uniteSurface: 'hectare',
     quantiteDisponible: '',
-    phoneproducer: '',
     isWhatsApp: false,
-    emailproducer: '',
     possibiliteLivraison: '',
     identityDocument: null,
   });
@@ -113,25 +110,23 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
 
   const handleProductionTypeChange = (value) => {
     setFormData(prev => {
-      const productionTypes = prev.productionTypes.includes(value)
-        ? prev.productionTypes.filter(t => t !== value)
-        : [...prev.productionTypes, value];
-      return { ...prev, productionTypes };
+      const typesProduction = prev.typesProduction.includes(value)
+        ? prev.typesProduction.filter(t => t !== value)
+        : [...prev.typesProduction, value];
+      return { ...prev, typesProduction };
     });
-    if (errors.productionTypes) {
-      setErrors(prev => ({ ...prev, productionTypes: '' }));
+    if (errors.typesProduction) {
+      setErrors(prev => ({ ...prev, typesProduction: '' }));
     }
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Vérifier la taille (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setErrors(prev => ({ ...prev, identityDocument: 'Le fichier ne doit pas dépasser 5 MB' }));
         return;
       }
-      // Vérifier le type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
       if (!allowedTypes.includes(file.type)) {
         setErrors(prev => ({ ...prev, identityDocument: 'Format non accepté. Utilisez JPG, PNG ou PDF' }));
@@ -145,63 +140,22 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (formData.userType === 'consumer') {
-      // Validation consumer
-      if (!formData.last_name.trim()) newErrors.last_name = 'Nom requis';
-      if (!formData.first_name.trim()) newErrors.first_name = 'Prénom requis';
-      
-      if (!formData.email) {
-        newErrors.email = 'Email requis';
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = 'Email invalide';
-      }
-
-      if (!formData.phone) {
-        newErrors.phone = 'Téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phone.replace(/\s/g, ''))) {
-        newErrors.phone = 'Numéro invalide';
-      }
-
-      if (!formData.city) newErrors.city = 'Ville requise';
-
-    } else if (formData.userType === 'producer') {
-      // Validation producteur
-      if (!formData.nomResponsable.trim()) {
-        newErrors.nomResponsable = 'Nom du responsable requis';
-      }
-
-      if (formData.productionTypes.length === 0 && !formData.autreProduction.trim()) {
-        newErrors.productionTypes = 'Sélectionnez au moins un type de production';
-      }
-
-      if (!formData.province) {
-        newErrors.province = 'Province requise';
-      }
-
-      if (!formData.cityProduction && !formData.villageProduction) {
-        newErrors.cityProduction = 'Ville ou village requis';
-      }
-
-      if (!formData.phoneproducer) {
-        newErrors.phoneproducer = 'Numéro de téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phoneproducer.replace(/\s/g, ''))) {
-        newErrors.phoneproducer = 'Numéro invalide';
-      }
-
-      if (formData.emailproducer && !/\S+@\S+\.\S+/.test(formData.emailproducer)) {
-        newErrors.emailproducer = 'Email invalide';
-      }
-
-      if (!formData.identityDocument) {
-        newErrors.identityDocument = 'Pièce d\'identité requise';
-      }
+    // Validation commune
+    if (!formData.first_name.trim()) newErrors.first_name = 'Prénom requis';
+    if (!formData.last_name.trim()) newErrors.last_name = 'Nom requis';
+    
+    if (!formData.phone) {
+      newErrors.phone = 'Téléphone requis';
+    } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Numéro invalide';
     }
 
-    // Validation commune
+    if (!formData.city) newErrors.city = 'Ville requise';
+
     if (!formData.password) {
       newErrors.password = 'Mot de passe requis';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Au moins 6 caractères';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Au moins 8 caractères';
     }
 
     if (formData.password !== formData.password_confirmation) {
@@ -212,75 +166,165 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
       newErrors.acceptTerms = 'Vous devez accepter les conditions';
     }
 
+    if (formData.userType === 'consumer') {
+      if (!formData.email) {
+        newErrors.email = 'Email requis';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Email invalide';
+      }
+    } else if (formData.userType === 'producer') {
+      if (formData.typesProduction.length === 0 && !formData.autreProduction.trim()) {
+        newErrors.typesProduction = 'Sélectionnez au moins un type de production';
+      }
+
+      if (!formData.province) {
+        newErrors.province = 'Province requise';
+      }
+
+      if (!formData.cityProduction && !formData.villageProduction) {
+        newErrors.cityProduction = 'Ville ou village requis';
+      }
+
+      if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Email invalide';
+      }
+
+      if (!formData.identityDocument) {
+        newErrors.identityDocument = 'Pièce d\'identité requise';
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  if (!validate()) return;
+    e.preventDefault();
+    setError('');
+    
+    console.log('🚀 Formulaire soumis pour:', formData.userType);
+    
+    if (!validate()) {
+      console.log('❌ Validation échouée:', errors);
+      return;
+    }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const submitData = new FormData();
+    try {
+      const submitData = new FormData();
 
-    // CHAMPS COMMUNS
-    submitData.append('userType', formData.userType);
-    submitData.append('email', formData.email);
-    submitData.append('password', formData.password);
-    submitData.append('password_confirmation', formData.password_confirmation);
-
-    if (formData.userType === 'consumer') {
+      // CHAMPS COMMUNS
+      submitData.append('userType', formData.userType);
       submitData.append('first_name', formData.first_name);
       submitData.append('last_name', formData.last_name);
       submitData.append('phone', formData.phone);
+      submitData.append('password', formData.password);
+      submitData.append('password_confirmation', formData.password_confirmation);
       submitData.append('city', formData.city);
-    }
+      submitData.append('acceptTerms', '1');
 
-    if (formData.userType === 'producer') {
-      submitData.append('responsibleFirstName', formData.nomResponsable);
-      submitData.append('responsibleLastName', formData.nomResponsable);
-      submitData.append('producerPhone', formData.telephoneproducer);
-      submitData.append('province', formData.province);
-      submitData.append(
-        'productionTypes',
-        JSON.stringify(formData.typesProduction)
-      );
-
-      if (formData.identityDocument) {
-        submitData.append('identityDocument', formData.identityDocument);
+      // CHAMPS SPÉCIFIQUES CONSUMER
+      if (formData.userType === 'consumer') {
+        submitData.append('email', formData.email);
+        
+        if (formData.adresse) {
+          submitData.append('adresse', formData.adresse);
+        }
       }
-    }
 
-    const response = await register(submitData);
+      // CHAMPS SPÉCIFIQUES PRODUCER
+      if (formData.userType === 'producer') {
+        submitData.append('province', formData.province);
+        
+        if (formData.typesProduction && formData.typesProduction.length > 0) {
+          submitData.append('typesProduction', JSON.stringify(formData.typesProduction));
+        }
 
-    setSuccess(true);
-
-    // ✅ REDIRECTION
-    setTimeout(() => {
-      if (response.user.role === 'producer') {
-        navigate('/producer/dashboard');
-      } else {
-        navigate('/'); // consommateur redirigé vers la home
+        if (formData.nomStructure) {
+          submitData.append('nomStructure', formData.nomStructure);
+        }
+        if (formData.autreProduction) {
+          submitData.append('autreProduction', formData.autreProduction);
+        }
+        if (formData.cityProduction) {
+          submitData.append('cityProduction', formData.cityProduction);
+        }
+        if (formData.villageProduction) {
+          submitData.append('villageProduction', formData.villageProduction);
+        }
+        if (formData.surfaceCultivee) {
+          submitData.append('surfaceCultivee', formData.surfaceCultivee);
+        }
+        if (formData.uniteSurface) {
+          submitData.append('uniteSurface', formData.uniteSurface);
+        }
+        if (formData.quantiteDisponible) {
+          submitData.append('quantiteDisponible', formData.quantiteDisponible);
+        }
+        if (formData.isWhatsApp !== undefined) {
+          submitData.append('isWhatsApp', formData.isWhatsApp ? '1' : '0');
+        }
+        if (formData.email) {
+          submitData.append('email', formData.email);
+        }
+        if (formData.possibiliteLivraison) {
+          submitData.append('possibiliteLivraison', formData.possibiliteLivraison === 'oui' ? '1' : '0');
+        }
+        
+        if (formData.identityDocument instanceof File) {
+          submitData.append('identityDocument', formData.identityDocument);
+        }
       }
-    }, 1500);
-  } catch (err) {
-      console.error('Erreur inscription:', err);
+
+      console.log('=== Données envoyées au backend ===');
+      for (let pair of submitData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+
+      console.log('📡 Envoi de la requête...');
+      const response = await register(submitData);
+      console.log('✅ Réponse reçue:', response);
+      
+      setSuccess(true);
+
+      setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+        } else if (redirectTo) {
+          navigate(redirectTo);
+        } else {
+          const userType = response?.user?.userType || response?.userType || formData.userType;
+          if (userType === 'producteur' || userType === 'producer') {
+            navigate('/producer/dashboard');
+          } else {
+            navigate('/');
+          }
+        }
+      }, 1500);
+    } catch (err) {
+      console.error('❌ Erreur inscription:', err);
 
       if (err.response?.data) {
         console.log('Détails backend:', err.response.data);
-        setError(JSON.stringify(err.response.data.errors || err.response.data, null, 2));
+        
+        if (err.response.data.errors) {
+          const errorMessages = Object.entries(err.response.data.errors)
+            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+            .join('\n');
+          setError(errorMessages);
+        } else if (err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError(JSON.stringify(err.response.data, null, 2));
+        }
       } else {
         setError(err.message);
       }
-    }finally {
+    } finally {
       setLoading(false);
-  }
-};
-
-
+    }
+  };
 
   if (success) {
     return (
@@ -316,38 +360,36 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* User Type Selector */}
         <UserTypeSelector
           selected={formData.userType}
           onChange={(type) => setFormData(prev => ({ ...prev, userType: type }))}
         />
 
-        {/* CHAMPS consumer */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Prénom"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleChange}
+            placeholder="Jean"
+            icon={<User />}
+            error={errors.first_name}
+            required
+          />
+          <Input
+            label="Nom"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleChange}
+            placeholder="Dupont"
+            icon={<User />}
+            error={errors.last_name}
+            required
+          />
+        </div>
+
         {formData.userType === 'consumer' && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Prénom"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                placeholder="Jean"
-                icon={<User />}
-                error={errors.first_name}
-                required
-              />
-              <Input
-                label="Nom"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                placeholder="Dupont"
-                icon={<User />}
-                error={errors.last_name}
-                required
-              />
-            </div>
-
             <Input
               label="Email"
               type="email"
@@ -393,22 +435,8 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           </>
         )}
 
-        {/* CHAMPS PRODUCTEUR */}
         {formData.userType === 'producer' && (
           <>
-            {/* Nom du responsable */}
-            <Input
-              label="Nom complet du responsable"
-              name="nomResponsable"
-              value={formData.nomResponsable}
-              onChange={handleChange}
-              placeholder="Ex: Jean Dupont"
-              icon={<User />}
-              error={errors.nomResponsable}
-              required
-            />
-
-            {/* Nom de la structure */}
             <Input
               label="Nom de la structure (optionnel)"
               name="nomStructure"
@@ -418,7 +446,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               icon={<Briefcase />}
             />
 
-            {/* Types de production */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Types de production <span className="text-red-500">*</span>
@@ -429,7 +456,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                     key={option.value}
                     className={`
                       flex items-center p-3 rounded-lg border-2 cursor-pointer transition
-                      ${formData.productionTypes.includes(option.value)
+                      ${formData.typesProduction.includes(option.value)
                         ? 'border-green-500 bg-green-50'
                         : 'border-gray-200 hover:border-gray-300'
                       }
@@ -437,7 +464,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                   >
                     <input
                       type="checkbox"
-                      checked={formData.productionTypes.includes(option.value)}
+                      checked={formData.typesProduction.includes(option.value)}
                       onChange={() => handleProductionTypeChange(option.value)}
                       className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                     />
@@ -445,12 +472,11 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                   </label>
                 ))}
               </div>
-              {errors.productionTypes && (
-                <p className="text-red-500 text-sm mt-1">{errors.productionTypes}</p>
+              {errors.typesProduction && (
+                <p className="text-red-500 text-sm mt-1">{errors.typesProduction}</p>
               )}
             </div>
 
-            {/* Autre production */}
             <Input
               label="Autre type de production"
               name="autreProduction"
@@ -460,7 +486,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               icon={<Leaf />}
             />
 
-            {/* Localisation */}
             <div>
               <Select
                 label="Province"
@@ -497,7 +522,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               )}
             </div>
 
-            {/* Surface cultivée / Capacité */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 label="Surface cultivée / Capacité (optionnel)"
@@ -520,7 +544,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               />
             </div>
 
-            {/* Quantité disponible */}
             <Input
               label="Quantité disponible (optionnel)"
               name="quantiteDisponible"
@@ -530,7 +553,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               icon={<Package />}
             />
 
-            {/* Téléphone producteur */}
             <div>
               <Input
                 label="Numéro de téléphone"
@@ -540,7 +562,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                 onChange={handleChange}
                 placeholder="+241 XX XX XX XX"
                 icon={<Phone />}
-                error={errors.phoneproducer}
+                error={errors.phone}
                 required
               />
               <div className="mt-2">
@@ -553,19 +575,17 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               </div>
             </div>
 
-            {/* Email producteur */}
             <Input
               label="Adresse email (optionnel)"
               type="email"
-              name="emailproducer"
-              value={formData.emailproducer}
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               placeholder="exemple@email.com"
               icon={<Mail />}
-              error={errors.emailproducer}
+              error={errors.email}
             />
 
-            {/* Possibilité de livraison */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Possibilité de livraison (optionnel)
@@ -596,7 +616,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               </div>
             </div>
 
-            {/* Pièce d'identité */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Pièce d'identité <span className="text-red-500">*</span>
@@ -624,8 +643,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           </>
         )}
 
-        {/* CHAMPS COMMUNS */}
-        {/* Mot de passe */}
         <Input
           label="Mot de passe"
           type="password"
@@ -638,7 +655,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           required
         />
 
-        {/* Confirmer mot de passe */}
         <Input
           label="Confirmer le mot de passe"
           type="password"
@@ -651,7 +667,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           required
         />
 
-        {/* Terms */}
         <div>
           <Checkbox
             name="acceptTerms"
@@ -675,17 +690,15 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           )}
         </div>
 
-        {/* Submit */}
         <Button
           fullWidth
           size="lg"
           loading={loading}
-          onClick={handleSubmit}
+          type="submit"
         >
           {loading ? 'Inscription...' : 'S\'inscrire'}
         </Button>
 
-        {/* Login Link */}
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Vous avez déjà un compte ?{' '}

@@ -208,7 +208,7 @@ const ProducerDashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate('/producer/produits/ajouter')}
+              onClick={() => navigate('/producer/products/ajouter')}
               className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -233,7 +233,7 @@ const ProducerDashboard = () => {
               </div>
             </div>
             <button 
-              onClick={() => navigate('/producer/produits')}
+              onClick={() => navigate('/producer/products')}
               className="text-blue-600 text-sm font-medium mt-4 hover:underline"
             >
               Voir tous les produits →
@@ -363,7 +363,7 @@ const ProducerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-bold text-gray-900">Mes produits</h2>
                   <button 
-                    onClick={() => navigate('/producer/produits')}
+                    onClick={() => navigate('/producer/products')}
                     className="text-green-600 text-sm font-medium hover:underline"
                   >
                     Gérer tous
@@ -411,7 +411,7 @@ const ProducerDashboard = () => {
                     <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p>Aucun produit ajouté</p>
                     <button
-                      onClick={() => navigate('/producer/produits/ajouter')}
+                      onClick={() => navigate('/producer/products/ajouter')}
                       className="mt-4 text-green-600 font-medium hover:underline"
                     >
                       Ajouter votre premier produit

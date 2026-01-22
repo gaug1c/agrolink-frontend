@@ -15,9 +15,9 @@ const ProducerRoutes = () => {
         <Route path="dashboard" element={<ProducerDashboard />} />
         
         {/* Gestion des produits */}
-        <Route path="produits" element={<ProductManagement />} />
-        <Route path="produits/ajouter" element={<AddEditProduct />} />
-        <Route path="produits/:productId/modifier" element={<AddEditProduct />} />
+        <Route path="products" element={<ProductManagement />} />
+        <Route path="products/ajouter" element={<AddEditProduct />} />
+        <Route path="products/:productId/modifier" element={<AddEditProduct />} />
         
         {/* Gestion des commandes */}
         <Route path="commandes" element={<OrderManagement />} />

@@ -46,7 +46,7 @@ const ProductCard = ({
   const discount = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
   return (
-    <Link to={`/produits/${id}`}>
+    <Link to={`/products/${id}`}>
       <div
         className={`
           bg-white rounded-2xl shadow-md hover:shadow-2xl

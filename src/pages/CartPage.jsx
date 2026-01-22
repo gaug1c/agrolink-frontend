@@ -19,7 +19,7 @@ const CartPage = () => {
             Ajoutez des produits pour commencer vos achats
           </p>
           <Link
-            to="/produits"
+            to="/products"
             className="inline-block bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
           >
             Découvrir nos produits

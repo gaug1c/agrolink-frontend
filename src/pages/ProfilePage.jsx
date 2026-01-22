@@ -60,7 +60,7 @@ const ProfilePage = () => {
                       <span>Mon dashboard</span>
                     </button>
                     <button 
-                      onClick={() => navigate('/producer/produits')}
+                      onClick={() => navigate('/producer/products')}
                       className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
                     >
                       <Package className="h-5 w-5" />

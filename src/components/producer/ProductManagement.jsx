@@ -138,14 +138,14 @@ const ProductManagement = () => {
         {/* Actions */}
         <div className="flex gap-2 pt-3 border-t border-gray-200">
           <button 
-            onClick={() => navigate(`/producteur/produits/${product.id}`)}
+            onClick={() => navigate(`/producteur/products/${product.id}`)}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
           >
             <Eye className="w-4 h-4" />
             Voir
           </button>
           <button 
-            onClick={() => navigate(`/producteur/produits/${product.id}/modifier`)}
+            onClick={() => navigate(`/producteur/products/${product.id}/modifier`)}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition"
           >
             <Edit className="w-4 h-4" />
@@ -201,13 +201,13 @@ const ProductManagement = () => {
         {/* Actions */}
         <div className="flex gap-2 flex-shrink-0">
           <button 
-            onClick={() => navigate(`/producteur/produits/${product.id}`)}
+            onClick={() => navigate(`/producteur/products/${product.id}`)}
             className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
           >
             <Eye className="w-5 h-5" />
           </button>
           <button 
-            onClick={() => navigate(`/producteur/produits/${product.id}/modifier`)}
+            onClick={() => navigate(`/producteur/products/${product.id}/modifier`)}
             className="p-2 text-blue-700 hover:bg-blue-100 rounded-lg transition"
           >
             <Edit className="w-5 h-5" />
@@ -242,7 +242,7 @@ const ProductManagement = () => {
               </div>
             </div>
             <button
-              onClick={() => navigate('/producteur/produits/ajouter')}
+              onClick={() => navigate('/producteur/products/ajouter')}
               className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -328,7 +328,7 @@ const ProductManagement = () => {
                 : 'Commencez par ajouter votre premier produit'}
             </p>
             <button
-              onClick={() => navigate('/producteur/produits/ajouter')}
+              onClick={() => navigate('/producteur/products/ajouter')}
               className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <Plus className="w-5 h-5 mr-2" />

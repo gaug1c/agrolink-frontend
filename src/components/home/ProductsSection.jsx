@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ProductCard } from '../common/Card';
 import Button from '../common/Button';
+import { useCart } from '../../context/CartContext';
 
 const ProductsSection = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const { addToCart } = useCart();
 
   // Catégories (avec icônes emoji)
   const categories = [
@@ -82,8 +84,8 @@ const ProductsSection = () => {
 
   const displayedProducts = filteredProducts.slice(0, 6);
 
-  const handleAddToCart = (productId) => {
-    console.log('Ajouter au panier:', productId);
+  const handleAddToCart = (product) => {
+    addToCart(product, 1);
   };
 
   return (
@@ -131,7 +133,7 @@ const ProductsSection = () => {
               oldPrice={product.oldPrice}
               rating={product.rating}
               badge={product.badge}
-              onAddToCart={() => handleAddToCart(product.id)}
+              onAddToCart={() => handleAddToCart(product)}
               onClick={() => (window.location.href = `/produits/${product.id}`)}
             />
           ))}

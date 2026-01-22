@@ -7,7 +7,7 @@ const ProducerProfile = ({ producer, products = [] }) => {
   const [activeTab, setActiveTab] = useState('products');
 
   const tabs = [
-    { id: 'products', label: 'Produits', count: products.length },
+    { id: 'products', label: 'products', count: products.length },
     { id: 'about', label: 'À propos' },
     { id: 'reviews', label: 'Avis', count: producer.reviewsCount },
   ];

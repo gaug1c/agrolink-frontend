@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Phone, MapPin, Briefcase, Upload, Leaf, Package } from 'lucide-react';
-import Button from '../common/Button';
-import Input, { Select, Checkbox } from '../common/Input';
-import UserTypeSelector from './UserTypeSelector';
-import { useAuth } from '../../hooks/useAuth';
-import Alert from '../common/Alert';
+import Button from '../components/common/Button';
+import Input, { Select, Checkbox } from '../components/common/Input';
+import UserTypeSelector from '../components/auth/UserTypeSelector';
+import { useAuth } from '../hooks/useAuth';
+import Alert from '../components/common/Alert';
 
 const RegisterForm = ({ onSuccess, redirectTo }) => {
   const navigate = useNavigate();
@@ -19,38 +19,35 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     // Champs communs
     email: '',
     password: '',
-    confirmPassword: '',
+    password_confirmation: '',
     acceptTerms: false,
     
-    // Champs consommateur
+    // Champs communs: nom et prénom
     last_name: '',
     first_name: '',
     phone: '',
     adresse: '',
-    ville: '',
+    city: '',
     
-    // Champs producteur
-    nomResponsable: '',
+    // Champs producteur spécifiques
     nomStructure: '',
     typesProduction: [],
     autreProduction: '',
     province: '',
-    villeProduction: '',
+    cityProduction: '',
     villageProduction: '',
     surfaceCultivee: '',
     uniteSurface: 'hectare',
     quantiteDisponible: '',
-    phoneProducteur: '',
     isWhatsApp: false,
-    emailProducteur: '',
     possibiliteLivraison: '',
-    pieceIdentite: null,
+    identityDocument: null,
   });
 
   const [errors, setErrors] = useState({});
 
-  // Options pour consommateurs
-  const villesOptions = [
+  // Options pour consumers
+  const citysOptions = [
     { value: '', label: 'Sélectionner une ville' },
     { value: 'libreville', label: 'Libreville' },
     { value: 'port-gentil', label: 'Port-Gentil' },
@@ -73,7 +70,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     { value: 'woleu-ntem', label: 'Woleu-Ntem' },
   ];
 
-  const villesParProvince = {
+  const citysParProvince = {
     'estuaire': ['Libreville', 'Owendo', 'Akanda', 'Ntoum', 'Kango'],
     'haut-ogooue': ['Franceville', 'Moanda', 'Mounana', 'Okondja', 'Lékoni'],
     'moyen-ogooue': ['Lambaréné', 'Ndjolé', 'Bifoun'],
@@ -85,7 +82,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
     'woleu-ntem': ['Oyem', 'Bitam', 'Mitzic', 'Minvoul'],
   };
 
-  const typesProductionOptions = [
+  const productionTypesOptions = [
     { value: 'banane', label: 'Banane' },
     { value: 'manioc', label: 'Manioc' },
     { value: 'tomate', label: 'Tomate' },
@@ -126,50 +123,56 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Vérifier la taille (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({ ...prev, pieceIdentite: 'Le fichier ne doit pas dépasser 5 MB' }));
+        setErrors(prev => ({ ...prev, identityDocument: 'Le fichier ne doit pas dépasser 5 MB' }));
         return;
       }
-      // Vérifier le type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
       if (!allowedTypes.includes(file.type)) {
-        setErrors(prev => ({ ...prev, pieceIdentite: 'Format non accepté. Utilisez JPG, PNG ou PDF' }));
+        setErrors(prev => ({ ...prev, identityDocument: 'Format non accepté. Utilisez JPG, PNG ou PDF' }));
         return;
       }
-      setFormData(prev => ({ ...prev, pieceIdentite: file }));
-      setErrors(prev => ({ ...prev, pieceIdentite: '' }));
+      setFormData(prev => ({ ...prev, identityDocument: file }));
+      setErrors(prev => ({ ...prev, identityDocument: '' }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
 
+    // Validation commune
+    if (!formData.first_name.trim()) newErrors.first_name = 'Prénom requis';
+    if (!formData.last_name.trim()) newErrors.last_name = 'Nom requis';
+    
+    if (!formData.phone) {
+      newErrors.phone = 'Téléphone requis';
+    } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Numéro invalide';
+    }
+
+    if (!formData.city) newErrors.city = 'Ville requise';
+
+    if (!formData.password) {
+      newErrors.password = 'Mot de passe requis';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Au moins 8 caractères';
+    }
+
+    if (formData.password !== formData.password_confirmation) {
+      newErrors.password_confirmation = 'Les mots de passe ne correspondent pas';
+    }
+
+    if (!formData.acceptTerms) {
+      newErrors.acceptTerms = 'Vous devez accepter les conditions';
+    }
+
     if (formData.userType === 'consumer') {
-      // Validation consommateur
-      if (!formData.last_name.trim()) newErrors.last_name = 'Nom requis';
-      if (!formData.first_name.trim()) newErrors.first_name = 'Prénom requis';
-      
       if (!formData.email) {
         newErrors.email = 'Email requis';
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
         newErrors.email = 'Email invalide';
       }
-
-      if (!formData.phone) {
-        newErrors.phone = 'Téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phone.replace(/\s/g, ''))) {
-        newErrors.phone = 'Numéro invalide';
-      }
-
-      if (!formData.ville) newErrors.ville = 'Ville requise';
-
-    } else if (formData.userType === 'producteur') {
-      // Validation producteur
-      if (!formData.nomResponsable.trim()) {
-        newErrors.nomResponsable = 'Nom du responsable requis';
-      }
-
+    } else if (formData.userType === 'producer') {
       if (formData.typesProduction.length === 0 && !formData.autreProduction.trim()) {
         newErrors.typesProduction = 'Sélectionnez au moins un type de production';
       }
@@ -178,38 +181,17 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
         newErrors.province = 'Province requise';
       }
 
-      if (!formData.villeProduction && !formData.villageProduction) {
-        newErrors.villeProduction = 'Ville ou village requis';
+      if (!formData.cityProduction && !formData.villageProduction) {
+        newErrors.cityProduction = 'Ville ou village requis';
       }
 
-      if (!formData.phoneProducteur) {
-        newErrors.phoneProducteur = 'Numéro de téléphone requis';
-      } else if (!/^(\+241)?[0-9]{8,}$/.test(formData.phoneProducteur.replace(/\s/g, ''))) {
-        newErrors.phoneProducteur = 'Numéro invalide';
+      if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Email invalide';
       }
 
-      if (formData.emailProducteur && !/\S+@\S+\.\S+/.test(formData.emailProducteur)) {
-        newErrors.emailProducteur = 'Email invalide';
+      if (!formData.identityDocument) {
+        newErrors.identityDocument = 'Pièce d\'identité requise';
       }
-
-      if (!formData.pieceIdentite) {
-        newErrors.pieceIdentite = 'Pièce d\'identité requise';
-      }
-    }
-
-    // Validation commune
-    if (!formData.password) {
-      newErrors.password = 'Mot de passe requis';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Au moins 6 caractères';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
-    }
-
-    if (!formData.acceptTerms) {
-      newErrors.acceptTerms = 'Vous devez accepter les conditions';
     }
 
     setErrors(newErrors);
@@ -219,54 +201,126 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (!validate()) return;
+    
+    console.log('🚀 Formulaire soumis pour:', formData.userType);
+    
+    if (!validate()) {
+      console.log('❌ Validation échouée:', errors);
+      return;
+    }
 
     setLoading(true);
 
     try {
-      // Créer FormData pour l'envoi avec fichier
       const submitData = new FormData();
-      
-      if (formData.userType === 'producteur') {
-        Object.keys(formData).forEach(key => {
-          if (key === 'typesProduction') {
-            submitData.append(key, JSON.stringify(formData[key]));
-          } else if (key === 'pieceIdentite' && formData[key]) {
-            submitData.append(key, formData[key]);
-          } else if (formData[key] !== null && formData[key] !== '') {
-            submitData.append(key, formData[key]);
-          }
-        });
-      } else {
-        // Pour consommateur, données simples
-        Object.keys(formData).forEach(key => {
-          if (formData[key] !== null && formData[key] !== '') {
-            submitData.append(key, formData[key]);
-          }
-        });
+
+      // CHAMPS COMMUNS
+      submitData.append('userType', formData.userType);
+      submitData.append('first_name', formData.first_name);
+      submitData.append('last_name', formData.last_name);
+      submitData.append('phone', formData.phone);
+      submitData.append('password', formData.password);
+      submitData.append('password_confirmation', formData.password_confirmation);
+      submitData.append('city', formData.city);
+      submitData.append('acceptTerms', '1');
+
+      // CHAMPS SPÉCIFIQUES CONSUMER
+      if (formData.userType === 'consumer') {
+        submitData.append('email', formData.email);
+        
+        if (formData.adresse) {
+          submitData.append('adresse', formData.adresse);
+        }
       }
 
+      // CHAMPS SPÉCIFIQUES PRODUCER
+      if (formData.userType === 'producer') {
+        submitData.append('province', formData.province);
+        
+        if (formData.typesProduction && formData.typesProduction.length > 0) {
+          submitData.append('typesProduction', JSON.stringify(formData.typesProduction));
+        }
+
+        if (formData.nomStructure) {
+          submitData.append('nomStructure', formData.nomStructure);
+        }
+        if (formData.autreProduction) {
+          submitData.append('autreProduction', formData.autreProduction);
+        }
+        if (formData.cityProduction) {
+          submitData.append('cityProduction', formData.cityProduction);
+        }
+        if (formData.villageProduction) {
+          submitData.append('villageProduction', formData.villageProduction);
+        }
+        if (formData.surfaceCultivee) {
+          submitData.append('surfaceCultivee', formData.surfaceCultivee);
+        }
+        if (formData.uniteSurface) {
+          submitData.append('uniteSurface', formData.uniteSurface);
+        }
+        if (formData.quantiteDisponible) {
+          submitData.append('quantiteDisponible', formData.quantiteDisponible);
+        }
+        if (formData.isWhatsApp !== undefined) {
+          submitData.append('isWhatsApp', formData.isWhatsApp ? '1' : '0');
+        }
+        if (formData.email) {
+          submitData.append('email', formData.email);
+        }
+        if (formData.possibiliteLivraison) {
+          submitData.append('possibiliteLivraison', formData.possibiliteLivraison === 'oui' ? '1' : '0');
+        }
+        
+        if (formData.identityDocument instanceof File) {
+          submitData.append('identityDocument', formData.identityDocument);
+        }
+      }
+
+      console.log('=== Données envoyées au backend ===');
+      for (let pair of submitData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+
+      console.log('📡 Envoi de la requête...');
       const response = await register(submitData);
-      setSuccess(true);
+      console.log('✅ Réponse reçue:', response);
       
+      setSuccess(true);
+
       setTimeout(() => {
         if (onSuccess) {
           onSuccess();
         } else if (redirectTo) {
           navigate(redirectTo);
         } else {
-          // Redirection automatique selon le userType
           const userType = response?.user?.userType || response?.userType || formData.userType;
           if (userType === 'producteur' || userType === 'producer') {
-            navigate('/dashboard/producteur');
+            navigate('/producer/dashboard');
           } else {
             navigate('/');
           }
         }
-      }, 2000);
+      }, 1500);
     } catch (err) {
-      setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+      console.error('❌ Erreur inscription:', err);
+
+      if (err.response?.data) {
+        console.log('Détails backend:', err.response.data);
+        
+        if (err.response.data.errors) {
+          const errorMessages = Object.entries(err.response.data.errors)
+            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+            .join('\n');
+          setError(errorMessages);
+        } else if (err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError(JSON.stringify(err.response.data, null, 2));
+        }
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -282,7 +336,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
         </div>
         <h3 className="text-2xl font-bold text-gray-800 mb-2">Inscription réussie !</h3>
         <p className="text-gray-600 mb-4">
-          {formData.userType === 'producteur' 
+          {formData.userType === 'producer' 
             ? 'Votre compte producteur a été créé avec succès. Redirection vers votre dashboard...' 
             : 'Votre compte a été créé avec succès. Redirection...'}
         </p>
@@ -306,38 +360,36 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* User Type Selector */}
         <UserTypeSelector
           selected={formData.userType}
           onChange={(type) => setFormData(prev => ({ ...prev, userType: type }))}
         />
 
-        {/* CHAMPS CONSOMMATEUR */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Prénom"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleChange}
+            placeholder="Jean"
+            icon={<User />}
+            error={errors.first_name}
+            required
+          />
+          <Input
+            label="Nom"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleChange}
+            placeholder="Dupont"
+            icon={<User />}
+            error={errors.last_name}
+            required
+          />
+        </div>
+
         {formData.userType === 'consumer' && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Prénom"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                placeholder="Jean"
-                icon={<User />}
-                error={errors.first_name}
-                required
-              />
-              <Input
-                label="Nom"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                placeholder="Dupont"
-                icon={<User />}
-                error={errors.last_name}
-                required
-              />
-            </div>
-
             <Input
               label="Email"
               type="email"
@@ -373,32 +425,18 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
 
             <Select
               label="Ville"
-              name="ville"
-              value={formData.ville}
+              name="city"
+              value={formData.city}
               onChange={handleChange}
-              options={villesOptions}
-              error={errors.ville}
+              options={citysOptions}
+              error={errors.city}
               required
             />
           </>
         )}
 
-        {/* CHAMPS PRODUCTEUR */}
-        {formData.userType === 'producteur' && (
+        {formData.userType === 'producer' && (
           <>
-            {/* Nom du responsable */}
-            <Input
-              label="Nom complet du responsable"
-              name="nomResponsable"
-              value={formData.nomResponsable}
-              onChange={handleChange}
-              placeholder="Ex: Jean Dupont"
-              icon={<User />}
-              error={errors.nomResponsable}
-              required
-            />
-
-            {/* Nom de la structure */}
             <Input
               label="Nom de la structure (optionnel)"
               name="nomStructure"
@@ -408,13 +446,12 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               icon={<Briefcase />}
             />
 
-            {/* Types de production */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Types de production <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {typesProductionOptions.map(option => (
+                {productionTypesOptions.map(option => (
                   <label
                     key={option.value}
                     className={`
@@ -440,7 +477,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               )}
             </div>
 
-            {/* Autre production */}
             <Input
               label="Autre type de production"
               name="autreProduction"
@@ -450,7 +486,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               icon={<Leaf />}
             />
 
-            {/* Localisation */}
             <div>
               <Select
                 label="Province"
@@ -462,18 +497,18 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                 required
               />
 
-              {formData.province && villesParProvince[formData.province] && (
+              {formData.province && citysParProvince[formData.province] && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <Select
                     label="Ville"
-                    name="villeProduction"
-                    value={formData.villeProduction}
+                    name="cityProduction"
+                    value={formData.cityProduction}
                     onChange={handleChange}
                     options={[
                       { value: '', label: 'Sélectionner une ville' },
-                      ...villesParProvince[formData.province].map(v => ({ value: v, label: v }))
+                      ...citysParProvince[formData.province].map(v => ({ value: v, label: v }))
                     ]}
-                    error={errors.villeProduction}
+                    error={errors.cityProduction}
                   />
                   <Input
                     label="Village (optionnel)"
@@ -487,7 +522,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               )}
             </div>
 
-            {/* Surface cultivée / Capacité */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 label="Surface cultivée / Capacité (optionnel)"
@@ -510,7 +544,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               />
             </div>
 
-            {/* Quantité disponible */}
             <Input
               label="Quantité disponible (optionnel)"
               name="quantiteDisponible"
@@ -520,17 +553,16 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               icon={<Package />}
             />
 
-            {/* Téléphone producteur */}
             <div>
               <Input
                 label="Numéro de téléphone"
                 type="tel"
-                name="phoneProducteur"
-                value={formData.phoneProducteur}
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 placeholder="+241 XX XX XX XX"
                 icon={<Phone />}
-                error={errors.phoneProducteur}
+                error={errors.phone}
                 required
               />
               <div className="mt-2">
@@ -543,19 +575,17 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               </div>
             </div>
 
-            {/* Email producteur */}
             <Input
               label="Adresse email (optionnel)"
               type="email"
-              name="emailProducteur"
-              value={formData.emailProducteur}
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               placeholder="exemple@email.com"
               icon={<Mail />}
-              error={errors.emailProducteur}
+              error={errors.email}
             />
 
-            {/* Possibilité de livraison */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Possibilité de livraison (optionnel)
@@ -586,7 +616,6 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
               </div>
             </div>
 
-            {/* Pièce d'identité */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Pièce d'identité <span className="text-red-500">*</span>
@@ -595,8 +624,8 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                 <label className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-500 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-50 transition">
                   <Upload className="h-8 w-8 mb-2" />
                   <span className="text-sm">
-                    {formData.pieceIdentite 
-                      ? formData.pieceIdentite.name 
+                    {formData.identityDocument 
+                      ? formData.identityDocument.name 
                       : 'Cliquez pour télécharger (JPG, PNG, PDF - max 5MB)'}
                   </span>
                   <input
@@ -607,15 +636,13 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
                   />
                 </label>
               </div>
-              {errors.pieceIdentite && (
-                <p className="text-red-500 text-sm mt-1">{errors.pieceIdentite}</p>
+              {errors.identityDocument && (
+                <p className="text-red-500 text-sm mt-1">{errors.identityDocument}</p>
               )}
             </div>
           </>
         )}
 
-        {/* CHAMPS COMMUNS */}
-        {/* Mot de passe */}
         <Input
           label="Mot de passe"
           type="password"
@@ -628,20 +655,18 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           required
         />
 
-        {/* Confirmer mot de passe */}
         <Input
           label="Confirmer le mot de passe"
           type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
+          name="password_confirmation"
+          value={formData.password_confirmation}
           onChange={handleChange}
           placeholder="••••••••"
           icon={<Lock />}
-          error={errors.confirmPassword}
+          error={errors.password_confirmation}
           required
         />
 
-        {/* Terms */}
         <div>
           <Checkbox
             name="acceptTerms"
@@ -665,17 +690,15 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
           )}
         </div>
 
-        {/* Submit */}
         <Button
           fullWidth
           size="lg"
           loading={loading}
-          onClick={handleSubmit}
+          type="submit"
         >
           {loading ? 'Inscription...' : 'S\'inscrire'}
         </Button>
 
-        {/* Login Link */}
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Vous avez déjà un compte ?{' '}
