@@ -141,7 +141,7 @@ const ProductsSection = () => {
 
         {/* CTA */}
         <div className="text-center">
-          <Link to="/produits">
+          <Link to="/products">
             <Button
               size="lg"
               icon={<ArrowRight className="w-5 h-5" />}

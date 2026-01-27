@@ -24,8 +24,8 @@ const Header = () => {
         {/* Top Bar */}
         <div className="hidden md:flex items-center justify-between py-2 text-sm border-b border-green-700">
           <div className="flex items-center gap-4">
-            <span>📞 +241 XX XX XX XX</span>
-            <span>📧 contact@agrolink.ga</span>
+            <span>📞 +241 074 22 54 06</span>
+            <span>📧 menguegauthier30@gmail.com</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/aide" className="hover:text-green-300 transition">
@@ -169,7 +169,7 @@ const Header = () => {
             <Link to="/" className="hover:text-green-300 transition font-medium">
               Accueil
             </Link>
-            <Link to="/produits" className="hover:text-green-300 transition font-medium">
+            <Link to="/products" className="hover:text-green-300 transition font-medium">
               Nos Produits
             </Link>
             <Link to="/producers" className="hover:text-green-300 transition font-medium">

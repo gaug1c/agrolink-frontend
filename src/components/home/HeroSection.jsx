@@ -70,7 +70,7 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/produits">
+              <Link to="/products">
                 <Button 
                   size="lg"
                   className="bg-white text-green-800 hover:bg-green-50"

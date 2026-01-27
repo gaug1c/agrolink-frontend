@@ -1,8 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { MapPin, Star, ArrowRight, Award, TrendingUp } from 'lucide-react';
-import Card from '../common/Card';
-import Button from '../common/Button';
 
 const ProducersSection = () => {
   const producers = [
@@ -59,7 +56,7 @@ const ProducersSection = () => {
         {/* Producers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {producers.map((producer) => (
-            <Card key={producer.id} hover padding="none" className="overflow-hidden group">
+            <div key={producer.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-2">
               {/* Image plein fond */}
               <div className="relative w-full h-64 overflow-hidden">
                 <img
@@ -114,59 +111,145 @@ const ProducersSection = () => {
                 </div>
 
                 {/* CTA Button */}
-                <Link to={`/producers/${producer.id}`}>
-                  <Button
-                    fullWidth
-                    variant="outline"
-                    icon={<ArrowRight className="w-4 h-4" />}
-                    iconPosition="right"
-                  >
-                    Voir le profil
-                  </Button>
-                </Link>
+                <button className="w-full bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                  Voir le profil
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
         {/* CTA Section */}
-        <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-3xl p-8 md:p-12 text-white text-center">
-          <div className="max-w-3xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">Vous êtes producteur ?</h3>
-            <p className="text-green-100 mb-8 text-lg">
-              Rejoignez notre plateforme et vendez vos produits directement aux consommateurs gabonais
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/devenir-producteur">
-                <Button size="lg" className="bg-white text-green-800 hover:bg-green-50">
+        <div className="relative bg-gradient-to-br from-green-600 via-green-700 to-green-900 rounded-3xl overflow-hidden shadow-2xl">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl" />
+          </div>
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 md:p-12">
+            {/* Left Content */}
+            <div className="text-white">
+              <div className="inline-block bg-yellow-400 text-green-900 px-4 py-2 rounded-full text-sm font-bold mb-6">
+                🌟 Opportunité exclusive
+              </div>
+              
+              <h3 className="text-3xl md:text-4xl font-bold mb-4">
+                Vous êtes producteur ?
+              </h3>
+              
+              <p className="text-green-100 mb-6 text-lg leading-relaxed">
+                Rejoignez la première plateforme gabonaise de vente directe et développez votre activité agricole. 
+                Plus de <span className="font-bold text-white">5000+ clients</span> actifs vous attendent !
+              </p>
+
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Inscription gratuite</h4>
+                    <p className="text-green-100 text-sm">Aucun frais d'adhésion, commencez dès aujourd'hui</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Commission avantageuse</h4>
+                    <p className="text-green-100 text-sm">Seulement 10% de commission sur vos ventes</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Paiement sécurisé</h4>
+                    <p className="text-green-100 text-sm">Virement direct sous 7 jours après livraison</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-1">Support dédié</h4>
+                    <p className="text-green-100 text-sm">Équipe disponible pour vous accompagner 7j/7</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button className="bg-white text-green-800 hover:bg-green-50 shadow-lg hover:shadow-xl transition-all hover:scale-105 font-bold py-3 px-8 rounded-lg text-lg">
                   Devenir producteur
-                </Button>
-              </Link>
-              <Link to="/contact">
-                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-green-800">
+                </button>
+                <button className="border-2 border-white text-white hover:bg-white hover:text-green-800 transition-all font-bold py-3 px-8 rounded-lg text-lg">
                   Nous contacter
-                </Button>
-              </Link>
+                </button>
+              </div>
+            </div>
+
+            {/* Right Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-5xl font-bold text-white mb-2">150+</div>
+                <p className="text-green-100">Producteurs actifs</p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-5xl font-bold text-white mb-2">5K+</div>
+                <p className="text-green-100">Clients satisfaits</p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-5xl font-bold text-white mb-2">98%</div>
+                <p className="text-green-100">Taux de satisfaction</p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-5xl font-bold text-white mb-2">24h</div>
+                <p className="text-green-100">Temps de réponse</p>
+              </div>
+
+              {/* Testimonial */}
+              <div className="col-span-2 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <img 
+                    src="https://tse1.mm.bing.net/th/id/OIP.DD1U_EyajocKOV6hWupXGAHaE8?pid=Api&P=0&h=180" 
+                    alt="Producteur"
+                    className="w-12 h-12 rounded-full border-2 border-white"
+                  />
+                  <div>
+                    <div className="font-semibold text-white">Paul MBA</div>
+                    <div className="text-green-100 text-sm">Producteur à Libreville</div>
+                  </div>
+                </div>
+                <p className="text-green-50 text-sm italic">
+                  "Agrolink a transformé mon activité ! Mes ventes ont augmenté de 300% en 6 mois."
+                </p>
+                <div className="flex gap-1 mt-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Benefits */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-12">
-          {[
-            { icon: '🎯', title: 'Visibilité', desc: 'Touchez des milliers de clients' },
-            { icon: '💰', title: 'Revenus', desc: 'Meilleurs prix garantis' },
-            { icon: '📱', title: 'Simplicité', desc: 'Gestion facile en ligne' },
-            { icon: '🤝', title: 'Support', desc: 'Accompagnement personnalisé' },
-          ].map((b, i) => (
-            <div key={i} className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">{b.icon}</span>
-              </div>
-              <h4 className="font-bold text-gray-800 mb-2">{b.title}</h4>
-              <p className="text-gray-600 text-sm">{b.desc}</p>
-            </div>
-          ))}
         </div>
       </div>
     </section>

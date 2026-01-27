@@ -148,13 +148,13 @@ const Footer = () => {
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 flex-shrink-0 text-green-400" />
                 <a href="tel:+24100000000" className="hover:text-white transition">
-                  +241 XX XX XX XX
+                  +241 074 22 54 06
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 flex-shrink-0 text-green-400" />
                 <a href="mailto:contact@agrolink.ga" className="hover:text-white transition">
-                  contact@agrolink.ga
+                  menguegauthier30@gmail.com
                 </a>
               </li>
             </ul>
