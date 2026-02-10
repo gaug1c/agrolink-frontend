@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import CartDropdown from '../components/cart/CartDropdown';
-import { useCart } from '../hooks/useCart';
+import { useCart } from '../context/CartContext';
 import { useNotification } from '../context/NotificationContext';
 
 const MainLayout = () => {

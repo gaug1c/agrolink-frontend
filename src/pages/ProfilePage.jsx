@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, ShoppingBag, Heart, Settings, LogOut, Store, Leaf, MapPin, Phone, Mail, Package, CheckCircle } from 'lucide-react';
+import { User, ShoppingBag, Heart, Settings, LogOut, Store, Leaf, MapPin, Phone, Mail, Package, CheckCircle, Edit } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import EditProfileModal from '../components/EditProfileModal';
 
 const ProfilePage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleLogout = () => {
     logout();
-    // Redirection après déconnexion
     navigate('/connexion');
+  };
+
+  const handleUpdateProfile = (updatedUser) => {
+    // Mettre à jour l'utilisateur dans le contexte
+    updateUser(updatedUser);
+    
+    // Afficher un message de succès
+    setSuccessMessage('Profil mis à jour avec succès !');
+    
+    // Masquer le message après 5 secondes
+    setTimeout(() => {
+      setSuccessMessage('');
+    }, 5000);
   };
 
   // Déterminer si l'utilisateur est un producteur
@@ -19,6 +34,14 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Message de succès */}
+        {successMessage && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center space-x-3">
+            <CheckCircle className="h-5 w-5 text-green-600" />
+            <p className="text-sm text-green-800">{successMessage}</p>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-4 gap-6">
           {/* Sidebar */}
           <aside className="md:col-span-1">
@@ -33,8 +56,8 @@ const ProfilePage = () => {
                 </div>
                 <h3 className="font-semibold text-lg">
                   {isProducer 
-                    ? (user?.nomResponsable || user?.firstName) 
-                    : `${user?.firstName || user?.prenom || ''} ${user?.lastName || user?.nom || ''}`}
+                    ? (user?.nomResponsable || user?.first_name) 
+                    : `${user?.first_name || user?.prenom || ''} ${user?.last_name || user?.nom || ''}`}
                 </h3>
                 <p className="text-gray-600 text-sm">{user?.email || user?.emailproducer}</p>
                 <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
@@ -42,7 +65,7 @@ const ProfilePage = () => {
                     ? 'bg-green-100 text-green-800' 
                     : 'bg-blue-100 text-blue-800'
                 }`}>
-                  {isProducer ? 'producteur' : 'consommateur'}
+                  {isProducer ? 'Producteur' : 'Consommateur'}
                 </span>
               </div>
               <nav className="space-y-2">
@@ -54,21 +77,21 @@ const ProfilePage = () => {
                   <>
                     <button 
                       onClick={() => navigate('/producer/dashboard')}
-                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
+                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition"
                     >
                       <Store className="h-5 w-5" />
                       <span>Mon dashboard</span>
                     </button>
                     <button 
                       onClick={() => navigate('/producer/products')}
-                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
+                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition"
                     >
                       <Package className="h-5 w-5" />
                       <span>Mes produits</span>
                     </button>
                     <button 
                       onClick={() => navigate('/producer/commandes')}
-                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50"
+                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition"
                     >
                       <ShoppingBag className="h-5 w-5" />
                       <span>Mes ventes</span>
@@ -76,23 +99,23 @@ const ProfilePage = () => {
                   </>
                 ) : (
                   <>
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50">
+                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition">
                       <ShoppingBag className="h-5 w-5" />
                       <span>Mes commandes</span>
                     </button>
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50">
+                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition">
                       <Heart className="h-5 w-5" />
                       <span>Favoris</span>
                     </button>
                   </>
                 )}
-                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50">
+                <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition">
                   <Settings className="h-5 w-5" />
                   <span>Paramètres</span>
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-600"
+                  className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 transition"
                 >
                   <LogOut className="h-5 w-5" />
                   <span>Déconnexion</span>
@@ -104,9 +127,18 @@ const ProfilePage = () => {
           {/* Main Content */}
           <main className="md:col-span-3">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-6">
-                {isProducer ? 'Informations du producteur' : 'Informations personnelles'}
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">
+                  {isProducer ? 'Informations du producteur' : 'Informations personnelles'}
+                </h2>
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span>Modifier</span>
+                </button>
+              </div>
               
               {isProducer ? (
                 // Informations Producteur
@@ -295,17 +327,18 @@ const ProfilePage = () => {
                   </div>
                 </div>
               )}
-
-              {/* Bouton de modification */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                  Modifier mes informations
-                </button>
-              </div>
             </div>
           </main>
         </div>
       </div>
+
+      {/* Modal d'édition */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        user={user}
+        onUpdate={handleUpdateProfile}
+      />
     </div>
   );
 };

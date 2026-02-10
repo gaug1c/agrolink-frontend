@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, ShoppingBag } from 'lucide-react';
-import { useCart } from '../hooks/useCart';
+import { useCart } from '../context/CartContext';
 
 const CartPage = () => {
   const navigate = useNavigate();

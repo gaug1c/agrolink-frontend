@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, MapPin, Phone, Mail } from 'lucide-react';
-import { useCart } from '../hooks/useCart';
+import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
 
 const CheckoutPage = () => {

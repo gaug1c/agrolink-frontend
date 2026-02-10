@@ -48,7 +48,7 @@ const RegisterForm = ({ onSuccess, redirectTo }) => {
 
   // Options pour consumers
   const citysOptions = [
-    { value: '', label: 'Sélectionner une ville' },
+    // { value: '', label: 'Sélectionner une ville' }, //delete
     { value: 'libreville', label: 'Libreville' },
     { value: 'port-gentil', label: 'Port-Gentil' },
     { value: 'franceville', label: 'Franceville' },

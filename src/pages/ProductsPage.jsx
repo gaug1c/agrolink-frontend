@@ -2,52 +2,69 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '../components/products/ProductCard';
 import { productService } from '../services/api/productService';
+import { categoryService } from '../services/api/categoryService';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
 
-  const categories = [
-    { id: 'all', name: 'Tous les produits' },
-    { id: 'fruits', name: 'Fruits' },
-    { id: 'legumes', name: 'Légumes' },
-    { id: 'cereales', name: 'Céréales' },
-    { id: 'tubercules', name: 'Tubercules' },
-    { id: 'epices', name: 'Épices' },
-    { id: 'produits-transformes', name: 'Produits transformés' },
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     fetchProducts();
   }, [selectedCategory, sortBy]);
 
-  const fetchProducts = async () => {
+  const fetchCategories = async () => {
     try {
-      setLoading(true);
-      const data = await productService.getAllProducts({
-        category: selectedCategory !== 'all' ? selectedCategory : undefined,
-        sort: sortBy,
-      });
-      setProducts(data);
+      const data = await categoryService.getAllCategories();
+      setCategories(data);
     } catch (error) {
-      console.error('Erreur lors du chargement des produits:', error);
-    } finally {
-      setLoading(false);
+      console.error('Erreur lors du chargement des catégories:', error);
     }
   };
 
+  const fetchProducts = async () => {
+  try {
+    setLoading(true);
+    let response;
+    
+    if (selectedCategory) {
+      response = await productService.getProductsByCategory(selectedCategory, {
+        sort: sortBy,
+      });
+    } else {
+      response = await productService.getAllProducts({
+        sort: sortBy,
+      });
+    }
+    
+    // Assure-toi que c'est un tableau
+    const data = Array.isArray(response) ? response : (response.data || []);
+    setProducts(data);
+  } catch (error) {
+    console.error('Erreur lors du chargement des produits:', error);
+    setProducts([]); // Important : initialise avec un tableau vide en cas d'erreur
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // Filtrer les produits par terme de recherche
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container-custom">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -83,6 +100,7 @@ const ProductsPage = () => {
               <option value="price-asc">Prix croissant</option>
               <option value="price-desc">Prix décroissant</option>
               <option value="popular">Plus populaires</option>
+              <option value="name">Nom (A-Z)</option>
             </select>
 
             {/* Filter Toggle */}
@@ -105,6 +123,19 @@ const ProductsPage = () => {
                 Catégories
               </h3>
               <div className="space-y-2">
+                {/* All products button */}
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition ${
+                    selectedCategory === null
+                      ? 'bg-green-600 text-white'
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  Tous les produits
+                </button>
+
+                {/* Category buttons */}
                 {categories.map((category) => (
                   <button
                     key={category.id}
@@ -141,13 +172,20 @@ const ProductsPage = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard 
+                      key={product.id} 
+                      product={product}
+                    />
                   ))}
                 </div>
               </>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">Aucun produit trouvé</p>
+              <div className="text-center py-12 bg-white rounded-lg">
+                <div className="text-6xl mb-4">🔍</div>
+                <p className="text-gray-500 text-lg mb-2">Aucun produit trouvé</p>
+                <p className="text-gray-400 text-sm">
+                  Essayez de modifier vos critères de recherche
+                </p>
               </div>
             )}
           </main>

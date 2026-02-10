@@ -11,10 +11,13 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 import ProductsPage from '../pages/ProductsPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
 import ProducersPage from '../pages/ProducersPage';
 import ProducerDetailPage from '../pages/ProducerDetailPage';
+import CategoriesPage from '../pages/CategoriesPage';
 import AboutPage from '../pages/AboutPage';
 import ContactPage from '../pages/ContactPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -87,6 +90,7 @@ const AppRoutes = () => {
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/producers" element={<ProducersPage />} />
         <Route path="/producers/:id" element={<ProducerDetailPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/a-propos" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Route>
@@ -95,6 +99,8 @@ const AppRoutes = () => {
       <Route element={<AuthLayout />}>
         <Route path="/connexion" element={<LoginPage />} />
         <Route path="/inscription" element={<RegisterPage />} />
+        <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
+        <Route path="/reinitialiser-mot-de-passe/:token" element={<ResetPasswordPage />} />
       </Route>
 
       {/* Routes consommateur protégées */}

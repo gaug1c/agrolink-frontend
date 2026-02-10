@@ -2,22 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, Eye, Star } from 'lucide-react';
 
-const ProductCard = ({
-  id,
-  image,
-  title,
-  category,
-  price,
-  oldPrice,
-  rating,
-  reviews,
-  badge,
-  inStock = true,
-  onAddToCart,
-  onToggleFavorite,
-  isFavorite = false,
-  className = '',
-}) => {
+const ProductCard = ({ product, onAddToCart, onToggleFavorite, isFavorite = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
 
@@ -27,7 +12,7 @@ const ProductCard = ({
     setAddingToCart(true);
 
     if (onAddToCart) {
-      await onAddToCart(id);
+      await onAddToCart(product);
     }
 
     setTimeout(() => {
@@ -39,21 +24,48 @@ const ProductCard = ({
     e.preventDefault();
     e.stopPropagation();
     if (onToggleFavorite) {
-      onToggleFavorite(id);
+      onToggleFavorite(product.id);
     }
   };
 
-  const discount = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  // Construire l'URL complète de l'image
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return 'https://via.placeholder.com/400x300?text=Image+non+disponible';
+    if (imagePath.startsWith('http')) return imagePath;
+    return `http://127.0.0.1:8000/storage/${imagePath}`;
+  };
+
+  // Gérer les images - vérifier si c'est une chaîne JSON ou un tableau
+  const getImages = () => {
+  console.log('product.images:', product.images, 'type:', typeof product.images);
+  
+  if (!product.images) return [];
+  if (typeof product.images === 'string') {
+    try {
+      return JSON.parse(product.images);
+    } catch {
+      return [product.images];
+    }
+  }
+  return Array.isArray(product.images) ? product.images : [];
+};
+
+  const images = getImages();
+  const mainImage = getImageUrl(images[0]);
+
+  // Calculer la réduction
+  const discount = product.old_price 
+    ? Math.round(((product.old_price - product.price) / product.old_price) * 100) 
+    : 0;
 
   return (
-    <Link to={`/products/${id}`}>
+    <Link to={`/products/${product.id}`}>
       <div
         className={`
           bg-white rounded-2xl shadow-md hover:shadow-2xl
           transition-all duration-300 overflow-hidden
           group cursor-pointer
-          ${!inStock ? 'opacity-75' : ''}
-          ${className}
+          ${!product.is_available ? 'opacity-75' : ''}
         `}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -61,23 +73,28 @@ const ProductCard = ({
         {/* Image Container */}
         <div className="relative h-56 bg-gradient-to-br from-green-100 to-green-200 overflow-hidden">
           {/* Product Image */}
-          <div className="absolute inset-0 flex items-center justify-center text-7xl group-hover:scale-110 transition-transform duration-300">
-            {image}
-          </div>
+          <img
+            src={mainImage}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/400x300?text=Image+non+disponible';
+            }}
+          />
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {badge && (
-              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                {badge}
+            {product.is_featured && (
+              <div className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                Vedette
               </div>
             )}
             {discount > 0 && (
-              <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                 -{discount}%
               </div>
             )}
-            {!inStock && (
+            {!product.is_available && (
               <div className="bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                 Rupture
               </div>
@@ -116,7 +133,7 @@ const ProductCard = ({
           </div>
 
           {/* Quick Add to Cart (on hover) */}
-          {inStock && (
+          {product.is_available && (
             <div
               className={`
                 absolute bottom-0 left-0 right-0 p-3
@@ -148,26 +165,26 @@ const ProductCard = ({
         {/* Content */}
         <div className="p-4">
           {/* Category */}
-          {category && (
+          {product.category && (
             <span className="inline-block text-xs text-green-600 font-semibold mb-2 uppercase">
-              {category}
+              {product.category.name}
             </span>
           )}
 
           {/* Title */}
           <h3 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-green-600 transition">
-            {title}
+            {product.name}
           </h3>
 
           {/* Rating */}
-          {rating && (
+          {product.rating && (
             <div className="flex items-center gap-2 mb-3">
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className={`w-4 h-4 ${
-                      i < Math.floor(rating)
+                      i < Math.floor(product.rating)
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'text-gray-300'
                     }`}
@@ -175,7 +192,7 @@ const ProductCard = ({
                 ))}
               </div>
               <span className="text-xs text-gray-500">
-                {rating} {reviews && `(${reviews})`}
+                {product.rating}
               </span>
             </div>
           )}
@@ -183,17 +200,31 @@ const ProductCard = ({
           {/* Price */}
           <div className="flex items-baseline gap-2 mb-3">
             <span className="text-2xl font-bold text-green-600">
-              {price.toLocaleString()} FCFA
+              {Number(product.price).toLocaleString()} FCFA
             </span>
-            {oldPrice && (
+            {product.old_price && (
               <span className="text-sm text-gray-400 line-through">
-                {oldPrice.toLocaleString()} FCFA
+                {Number(product.old_price).toLocaleString()} FCFA
               </span>
             )}
           </div>
 
+          {/* Unit */}
+          {product.unit && (
+            <div className="text-sm text-gray-600 mb-3">
+              Par {product.unit}
+            </div>
+          )}
+
+          {/* Stock Info */}
+          {product.stock && product.stock < 10 && (
+            <div className="text-xs text-orange-600 mb-3">
+              Plus que {product.stock} en stock !
+            </div>
+          )}
+
           {/* Add to Cart Button - Mobile */}
-          {inStock && (
+          {product.is_available && (
             <button
               onClick={handleAddToCart}
               disabled={addingToCart}
@@ -214,7 +245,7 @@ const ProductCard = ({
           )}
 
           {/* Out of Stock Button */}
-          {!inStock && (
+          {!product.is_available && (
             <button
               disabled
               className="w-full bg-gray-300 text-gray-600 font-semibold py-2 rounded-lg cursor-not-allowed"

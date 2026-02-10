@@ -17,15 +17,17 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    try {
-      const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        setCart(JSON.parse(storedCart));
-      }
-    } catch (error) {
-      console.error('Error loading cart:', error);
+  try {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      const parsed = JSON.parse(storedCart);
+      setCart(Array.isArray(parsed) ? parsed : []);
     }
-  }, []);
+  } catch (error) {
+    console.error('Error loading cart:', error);
+    setCart([]);
+  }
+}, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
